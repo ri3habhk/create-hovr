@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Search, Users, Chat, Wallet } from 'lucide-react';
+import { Search, Users, MessageCircle, Wallet } from 'lucide-react';
 
 const HowItWorks = () => {
   const steps = [
@@ -17,7 +17,7 @@ const HowItWorks = () => {
       color: "text-green-400"
     },
     {
-      icon: Chat,
+      icon: MessageCircle,
       title: "Collaborate & Create",
       description: "Chat directly with creators, share files securely, and collaborate in real-time to bring your vision to life.",
       color: "text-purple-400"
