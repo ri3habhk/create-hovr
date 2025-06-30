@@ -23,7 +23,7 @@ const Navigation = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold gradient-accent bg-clip-text text-transparent">
-                CreativeHub
+                Hovr
               </h1>
             </div>
           </div>
