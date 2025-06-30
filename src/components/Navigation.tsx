@@ -2,16 +2,17 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User, Plus } from 'lucide-react';
+import { Menu, User, Plus, HelpCircle } from 'lucide-react';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
     { name: 'Find Creators', href: '#creators' },
-    { name: 'Post Project', href: '#post-project' },
+    { name: 'Create', href: '#create' },
     { name: 'How It Works', href: '#how-it-works' },
     { name: 'Pricing', href: '#pricing' },
+    { name: 'Get Help', href: '#help' },
     { name: 'About', href: '#about' },
   ];
 

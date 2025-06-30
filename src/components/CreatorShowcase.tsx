@@ -8,36 +8,36 @@ const CreatorShowcase = () => {
   const creators = [
     {
       name: "Sarah Chen",
+      initials: "SC",
       specialty: "Brand Designer",
       rating: 4.9,
       projects: 127,
       location: "Mumbai, India",
       tags: ["Logo Design", "Brand Identity", "UI/UX"],
       priceRange: "₹5,000 - ₹25,000",
-      premium: true,
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face"
+      premium: true
     },
     {
       name: "Arjun Patel",
+      initials: "AP",
       specialty: "Video Editor",
       rating: 4.8,
       projects: 89,
       location: "Delhi, India",
       tags: ["Motion Graphics", "Color Grading", "Social Media"],
       priceRange: "₹3,000 - ₹15,000",
-      premium: false,
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
+      premium: false
     },
     {
       name: "Priya Sharma",
+      initials: "PS",
       specialty: "Filmmaker",
       rating: 5.0,
       projects: 45,
       location: "Bangalore, India",
       tags: ["Cinematography", "Documentary", "Commercial"],
       priceRange: "₹10,000 - ₹50,000",
-      premium: true,
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face"
+      premium: true
     }
   ];
 
@@ -49,9 +49,19 @@ const CreatorShowcase = () => {
             Meet Our Top
             <span className="gradient-accent bg-clip-text text-transparent"> Creators</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
             Discover talented professionals ready to bring your marketing vision to life
           </p>
+          <div className="max-w-3xl mx-auto">
+            <Card className="gradient-card border-border/50">
+              <CardContent className="p-6">
+                <p className="text-sm text-muted-foreground">
+                  💡 <strong>Focus on the work, not the person.</strong> Hovr encourages creators to showcase their talent through their portfolio rather than profile photos. 
+                  This helps eliminate bias and ensures projects are matched based on skill and creativity, regardless of gender, background, or appearance.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -59,12 +69,8 @@ const CreatorShowcase = () => {
             <Card key={index} className="gradient-card border-border/50 hover-lift group overflow-hidden">
               <CardHeader className="pb-4">
                 <div className="relative">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 overflow-hidden">
-                    <img 
-                      src={creator.image} 
-                      alt={creator.name}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-primary">{creator.initials}</span>
                   </div>
                   {creator.premium && (
                     <Badge className="absolute -top-2 -right-2 gradient-accent">

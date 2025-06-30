@@ -18,8 +18,7 @@ const HeroSection = () => {
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            The premier marketplace for brands to discover exceptional video editors, 
-            brand designers, and filmmakers ready to bring your vision to life.
+            Discover world-class creators — filmmakers, designers, editors, and more — all in one powerful platform.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -29,7 +28,7 @@ const HeroSection = () => {
             </Button>
             <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2 hover-lift">
               <Folder className="h-5 w-5 mr-2" />
-              Post a Project
+              Create
             </Button>
           </div>
 
@@ -53,6 +52,18 @@ const HeroSection = () => {
               <CardContent className="p-6 text-center">
                 <div className="text-3xl font-bold text-primary mb-2">99%</div>
                 <p className="text-muted-foreground">Client Satisfaction</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trust Banner */}
+          <div className="mt-12">
+            <Card className="gradient-card border-border/50 max-w-2xl mx-auto">
+              <CardContent className="p-6">
+                <p className="text-sm text-muted-foreground">
+                  🔒 <strong>Your data is secure with us.</strong> We use bank-level encryption and never share your personal information. 
+                  All payments are processed through secure, industry-standard payment gateways with full fraud protection.
+                </p>
               </CardContent>
             </Card>
           </div>

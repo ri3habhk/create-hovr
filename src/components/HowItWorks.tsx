@@ -35,7 +35,7 @@ const HowItWorks = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
-            How CreativeHub
+            How Hovr
             <span className="gradient-accent bg-clip-text text-transparent"> Works</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -74,7 +74,7 @@ const HowItWorks = () => {
                   <p className="text-muted-foreground text-sm">
                     • 30% released upon project acceptance<br/>
                     • 70% released upon client approval<br/>
-                    • 5% platform fee (non-negotiable)
+                    • 10% platform fee (transparent pricing)
                   </p>
                 </div>
                 <div>

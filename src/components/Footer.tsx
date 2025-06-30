@@ -7,7 +7,7 @@ const Footer = () => {
     Platform: [
       'How It Works',
       'Find Creators',
-      'Post a Project',
+      'Create a Project',
       'Success Stories',
       'Help Center'
     ],
@@ -49,7 +49,7 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <h3 className="text-2xl font-bold gradient-accent bg-clip-text text-transparent mb-4">
-              CreativeHub
+              Hovr
             </h3>
             <p className="text-muted-foreground text-sm mb-6">
               The premier marketplace connecting brands with elite marketing creators worldwide.
@@ -90,7 +90,7 @@ const Footer = () => {
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Secure escrow payment system</li>
                 <li>• 30% upfront, 70% on completion</li>
-                <li>• 5% platform fee (transparent pricing)</li>
+                <li>• 10% platform fee (transparent pricing)</li>
                 <li>• Full payment protection guarantee</li>
               </ul>
             </div>
@@ -110,9 +110,9 @@ const Footer = () => {
         <div className="border-t border-border/40 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="text-sm text-muted-foreground mb-4 md:mb-0">
-              © 2024 CreativeHub. All rights reserved. | 
+              © 2024 Hovr. All rights reserved. | 
               <span className="text-xs ml-2">
-                Platform fee: 5% on all transactions (non-negotiable)
+                Platform fee: 10% on all transactions (transparent pricing)
               </span>
             </div>
             <div className="flex items-center space-x-4">

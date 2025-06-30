@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Star, Crown, Users } from 'lucide-react';
+import { Check, Star, Crown, Users, Info } from 'lucide-react';
 
 const PricingSection = () => {
   const creatorPlans = [
@@ -16,7 +16,7 @@ const PricingSection = () => {
         "Apply to public projects",
         "Standard project visibility",
         "Basic messaging",
-        "5% platform fee applies"
+        "10% platform fee applies"
       ],
       icon: Users,
       popular: false
@@ -32,7 +32,7 @@ const PricingSection = () => {
         "Advanced analytics dashboard",
         "Unlimited portfolio uploads",
         "Premium creator badge",
-        "5% platform fee applies"
+        "10% platform fee applies"
       ],
       icon: Star,
       popular: true
@@ -50,14 +50,14 @@ const PricingSection = () => {
         "Access to all creators",
         "Basic matching algorithm",
         "Standard messaging",
-        "5% platform fee applies"
+        "10% platform fee applies"
       ],
       icon: Users,
       popular: false
     },
     {
       name: "Premium Client",
-      price: "₹1,999",
+      price: "₹999",
       period: "/month",
       description: "Access to elite creators and premium features",
       features: [
@@ -66,7 +66,7 @@ const PricingSection = () => {
         "Priority project placement",
         "Dedicated account manager",
         "Premium support",
-        "5% platform fee applies"
+        "10% platform fee applies"
       ],
       icon: Crown,
       popular: true
@@ -143,6 +143,45 @@ const PricingSection = () => {
           </div>
         </div>
 
+        {/* Platform Fee Explanation */}
+        <div className="mb-16">
+          <Card className="gradient-card border-border/50 max-w-4xl mx-auto">
+            <CardContent className="p-8">
+              <div className="flex items-center justify-center mb-6">
+                <Info className="h-6 w-6 text-primary mr-2" />
+                <h3 className="text-2xl font-bold text-center">Why 10% Platform Fee?</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-semibold text-primary mb-4">Infrastructure & Security</h4>
+                  <ul className="space-y-2 text-muted-foreground text-sm">
+                    <li>• Bank-level security and encryption</li>
+                    <li>• 24/7 server monitoring and maintenance</li>
+                    <li>• Secure payment processing infrastructure</li>
+                    <li>• Data backup and disaster recovery</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-primary mb-4">Support & Trust</h4>
+                  <ul className="space-y-2 text-muted-foreground text-sm">
+                    <li>• AI-powered dispute resolution system</li>
+                    <li>• Dedicated customer support team</li>
+                    <li>• Fraud detection and prevention</li>
+                    <li>• Quality assurance and verification</li>
+                  </ul>
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-background/20 rounded-lg">
+                <p className="text-xs text-muted-foreground text-center">
+                  Operating a secure, reliable platform that connects thousands of creators and clients requires significant 
+                  investment in technology, security, and support. Our 10% fee ensures we can maintain the highest standards 
+                  of service while keeping your data safe and transactions secure.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Payment Terms */}
         <Card className="gradient-card border-border/50 max-w-4xl mx-auto">
           <CardContent className="p-8">
@@ -170,7 +209,7 @@ const PricingSection = () => {
                 <ul className="space-y-2 text-muted-foreground">
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-400 mr-2" />
-                    5% platform fee on all transactions
+                    10% platform fee on all transactions
                   </li>
                   <li className="flex items-center">
                     <Check className="h-4 w-4 text-green-400 mr-2" />
@@ -185,8 +224,8 @@ const PricingSection = () => {
             </div>
             <div className="mt-6 p-4 bg-background/20 rounded-lg">
               <p className="text-xs text-muted-foreground text-center">
-                * All fees are clearly disclosed upfront. The 5% platform fee covers secure payment processing, 
-                dispute resolution, and platform maintenance. No hidden charges ever.
+                * All fees are clearly disclosed upfront. The 10% platform fee covers secure payment processing, 
+                dispute resolution, AI support systems, and platform maintenance. No hidden charges ever.
               </p>
             </div>
           </CardContent>
