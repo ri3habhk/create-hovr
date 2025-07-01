@@ -47,13 +47,13 @@ const CreatorShowcase = () => {
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Meet Our Top
-            <span className="gradient-accent bg-clip-text text-transparent"> Creators</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Creators</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
             Discover talented professionals ready to bring your marketing vision to life
           </p>
           <div className="max-w-3xl mx-auto">
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
               <CardContent className="p-6">
                 <p className="text-sm text-muted-foreground">
                   💡 <strong>Focus on the work, not the person.</strong> Hovr encourages creators to showcase their talent through their portfolio rather than profile photos. 
