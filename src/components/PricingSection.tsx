@@ -22,7 +22,7 @@ const PricingSection = () => {
     },
     {
       name: "Creator Pro",
-      price: "₹999/month",
+      price: "₹299/month",
       description: "For established creators who want more opportunities",
       features: [
         "Everything in Basic",
@@ -30,7 +30,13 @@ const PricingSection = () => {
         "Priority project matching",
         "Advanced portfolio features",
         "Priority customer support",
-        "Analytics dashboard"
+        "Analytics dashboard",
+        "Featured profile listing",
+        "Custom portfolio themes",
+        "Direct client contact info",
+        "Revenue tracking tools",
+        "Exclusive high-paying projects",
+        "Personal brand verification badge"
       ],
       popular: true,
       cta: "Go Pro"
@@ -51,7 +57,7 @@ const PricingSection = () => {
     },
     {
       name: "Client Business",
-      price: "₹1,999/month",
+      price: "₹999/month",
       description: "For businesses with ongoing creative needs",
       features: [
         "Unlimited projects",
@@ -59,7 +65,14 @@ const PricingSection = () => {
         "Dedicated account manager",
         "Team collaboration tools",
         "Priority support",
-        "Custom contracts"
+        "Custom contracts",
+        "Bulk project discounts",
+        "Advanced project templates",
+        "Multi-user team access",
+        "White-label solutions",
+        "API access for integrations",
+        "Custom workflow automation",
+        "Priority creator recommendations"
       ],
       popular: false,
       cta: "Start Business"
