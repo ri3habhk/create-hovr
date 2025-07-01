@@ -8,12 +8,12 @@ import { Plus, Mail, User, Lock, CreditCard, Shield } from 'lucide-react';
 
 const CreateSection = () => {
   return (
-    <section id="create" className="py-20 gradient-primary">
+    <section id="create" className="py-20 bg-gradient-to-br from-background to-background/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Create Your
-            <span className="gradient-accent bg-clip-text text-transparent"> Account</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Account</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Join thousands of creators and clients on Hovr. Get started in minutes with secure authentication.
@@ -23,7 +23,7 @@ const CreateSection = () => {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Sign Up Form */}
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
               <CardHeader>
                 <CardTitle className="text-2xl text-center">Sign Up</CardTitle>
               </CardHeader>
@@ -51,27 +51,27 @@ const CreateSection = () => {
                 {/* Email Sign Up */}
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email">Email Address</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="email" type="email" placeholder="Enter your email" className="pl-10" />
+                      <Input id="email" type="email" placeholder="Enter your email address" className="pl-10" />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Create Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input id="password" type="password" placeholder="Create a password" className="pl-10" />
+                      <Input id="password" type="password" placeholder="Create a secure password" className="pl-10" />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="userType">I am a...</Label>
+                    <Label htmlFor="userType">Account Type</Label>
                     <select id="userType" className="w-full p-3 bg-background border border-border rounded-md">
-                      <option value="creator">Creator</option>
-                      <option value="client">Client</option>
+                      <option value="creator">I'm a Creator</option>
+                      <option value="client">I'm a Client</option>
                     </select>
                   </div>
-                  <Button className="w-full gradient-accent" size="lg">
+                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white" size="lg">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Account
                   </Button>
@@ -84,7 +84,7 @@ const CreateSection = () => {
             </Card>
 
             {/* Account Benefits */}
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
               <CardHeader>
                 <CardTitle className="text-2xl text-center">Why Join Hovr?</CardTitle>
               </CardHeader>
@@ -117,7 +117,7 @@ const CreateSection = () => {
                   <CardContent className="p-4">
                     <h4 className="font-semibold mb-2 text-primary">Payment Verification Required</h4>
                     <p className="text-sm text-muted-foreground">
-                      To withdraw funds from your wallet, you'll need to upload valid payment details including bank account information or preferred payment method for secure transactions.
+                      To withdraw funds from your wallet, you need to upload valid payment details including bank account information or preferred payment method for secure transactions.
                     </p>
                   </CardContent>
                 </Card>

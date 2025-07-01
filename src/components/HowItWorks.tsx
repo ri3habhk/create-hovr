@@ -31,12 +31,12 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 gradient-primary">
+    <section id="how-it-works" className="py-20 bg-gradient-to-br from-background to-background/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             How Hovr
-            <span className="gradient-accent bg-clip-text text-transparent"> Works</span>
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Works</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             From project posting to final delivery, we've streamlined the entire process 
@@ -46,7 +46,7 @@ const HowItWorks = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <Card key={index} className="gradient-card border-border/50 hover-lift group">
+            <Card key={index} className="bg-gradient-to-br from-card to-card/80 border-border/50 hover-lift group">
               <CardHeader className="text-center pb-4">
                 <div className={`inline-flex p-4 rounded-full bg-background/10 mb-4 group-hover:scale-110 transition-transform duration-300`}>
                   <step.icon className={`h-8 w-8 ${step.color}`} />
@@ -65,7 +65,7 @@ const HowItWorks = () => {
 
         {/* Trust & Security */}
         <div className="mt-16 text-center">
-          <Card className="gradient-card border-border/50 max-w-3xl mx-auto">
+          <Card className="bg-gradient-to-r from-card to-card/80 border-border/50 max-w-3xl mx-auto">
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold mb-4">Complete Transparency & Security</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
