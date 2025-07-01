@@ -23,7 +23,7 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold gradient-accent bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Hovr
               </h1>
             </div>
@@ -50,7 +50,7 @@ const Navigation = () => {
               <User className="h-4 w-4 mr-2" />
               Sign In
             </Button>
-            <Button size="sm" className="gradient-accent">
+            <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
               <Plus className="h-4 w-4 mr-2" />
               Get Started
             </Button>
@@ -81,7 +81,7 @@ const Navigation = () => {
                       <User className="h-4 w-4 mr-2" />
                       Sign In
                     </Button>
-                    <Button size="sm" className="gradient-accent">
+                    <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
                       <Plus className="h-4 w-4 mr-2" />
                       Get Started
                     </Button>
