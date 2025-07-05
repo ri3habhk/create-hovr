@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, Users, Folder, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CreatorShowcase = () => {
   const creators = [
@@ -119,10 +120,12 @@ const CreatorShowcase = () => {
         </div>
 
         <div className="text-center">
-          <Button size="lg" variant="outline" className="hover-lift">
-            <Search className="h-5 w-5 mr-2" />
-            Browse All Creators
-          </Button>
+          <Link to="/creators">
+            <Button size="lg" variant="outline" className="hover-lift">
+              <Search className="h-5 w-5 mr-2" />
+              Browse All Creators
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,7 +1,7 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowDown, Users, Folder, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
@@ -22,14 +22,18 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg px-8 py-4 hover-lift">
-              <Search className="h-5 w-5 mr-2" />
-              Find Creators
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2 hover-lift">
-              <Folder className="h-5 w-5 mr-2" />
-              Create Account
-            </Button>
+            <Link to="/creators">
+              <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg px-8 py-4 hover-lift">
+                <Search className="h-5 w-5 mr-2" />
+                Find Creators
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2 hover-lift">
+                <Folder className="h-5 w-5 mr-2" />
+                Create Account
+              </Button>
+            </Link>
           </div>
 
           {/* Stats Cards */}
