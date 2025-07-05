@@ -1,12 +1,20 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, CheckCircle, FileText } from 'lucide-react';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const PaymentTerms = () => {
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: cardRef, isVisible: cardVisible } = useScrollAnimation();
+  const { ref: termsRef, isVisible: termsVisible } = useScrollAnimation();
+
   return (
     <section className="py-20 bg-gradient-to-br from-background to-background/80">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div 
+          ref={titleRef as any}
+          className={`text-center mb-16 scroll-animate ${titleVisible ? 'animate' : ''}`}
+        >
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Secure Payment
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Structure</span>
@@ -17,7 +25,10 @@ const PaymentTerms = () => {
         </div>
 
         <div className="max-w-4xl mx-auto">
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50 hover-lift mb-8">
+          <Card 
+            ref={cardRef as any}
+            className={`bg-gradient-to-br from-card to-card/80 border-border/50 hover-lift mb-8 scroll-animate-scale ${cardVisible ? 'animate' : ''}`}
+          >
             <CardContent className="p-12 text-center">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <div className="space-y-4">
@@ -42,7 +53,10 @@ const PaymentTerms = () => {
           </Card>
 
           {/* Terms and Conditions */}
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+          <Card 
+            ref={termsRef as any}
+            className={`bg-gradient-to-br from-card to-card/80 border-border/50 scroll-animate ${termsVisible ? 'animate' : ''}`}
+          >
             <CardContent className="p-8">
               <div className="flex items-start space-x-4">
                 <FileText className="h-6 w-6 text-muted-foreground flex-shrink-0 mt-1" />

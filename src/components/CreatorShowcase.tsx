@@ -4,8 +4,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, Users, Folder, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 
 const CreatorShowcase = () => {
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: cardsRef, isVisible: cardsVisible } = useScrollAnimation();
+  const { ref: buttonRef, isVisible: buttonVisible } = useScrollAnimation();
+
   const creators = [
     {
       id: 1,
@@ -48,7 +53,10 @@ const CreatorShowcase = () => {
   return (
     <section id="creators" className="py-20 bg-background/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div 
+          ref={titleRef as any}
+          className={`text-center mb-16 scroll-animate ${titleVisible ? 'animate' : ''}`}
+        >
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Meet Our Top
             <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Creators</span>
@@ -68,9 +76,16 @@ const CreatorShowcase = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div 
+          ref={cardsRef as any}
+          className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12`}
+        >
           {creators.map((creator, index) => (
-            <Card key={index} className="gradient-card border-border/50 hover-lift group overflow-hidden">
+            <Card 
+              key={index} 
+              className={`gradient-card border-border/50 hover-lift group overflow-hidden scroll-animate ${cardsVisible ? 'animate' : ''}`}
+              style={{ animationDelay: `${index * 0.2}s` }}
+            >
               <CardHeader className="pb-4">
                 <div className="relative">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center">
@@ -124,7 +139,10 @@ const CreatorShowcase = () => {
           ))}
         </div>
 
-        <div className="text-center">
+        <div 
+          ref={buttonRef as any}
+          className={`text-center scroll-animate ${buttonVisible ? 'animate' : ''}`}
+        >
           <Link to="/creators">
             <Button size="lg" variant="outline" className="hover-lift">
               <Search className="h-5 w-5 mr-2" />
