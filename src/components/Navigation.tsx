@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -14,7 +13,7 @@ const Navigation = () => {
     { name: 'How It Works', href: '#how-it-works' },
     { name: 'Pricing', href: '/pricing' },
     { name: 'Get Help', href: '#help' },
-    { name: 'About', href: '#about' },
+    { name: 'Dashboard', href: '/dashboard' },
   ];
 
   return (

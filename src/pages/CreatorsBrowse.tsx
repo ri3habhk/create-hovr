@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Star, Users, Folder, Search, Filter } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { Link } from 'react-router-dom';
 
 const CreatorsBrowse = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -15,6 +15,7 @@ const CreatorsBrowse = () => {
 
   const creators = [
     {
+      id: 1,
       name: "Sarah Chen",
       initials: "SC",
       specialty: "Brand Designer",
@@ -26,6 +27,7 @@ const CreatorsBrowse = () => {
       premium: true
     },
     {
+      id: 2,
       name: "Arjun Patel",
       initials: "AP",
       specialty: "Video Editor",
@@ -37,6 +39,7 @@ const CreatorsBrowse = () => {
       premium: false
     },
     {
+      id: 3,
       name: "Priya Sharma",
       initials: "PS",
       specialty: "Filmmaker",
@@ -48,6 +51,7 @@ const CreatorsBrowse = () => {
       premium: true
     },
     {
+      id: 4,
       name: "Raj Kumar",
       initials: "RK",
       specialty: "Graphic Designer",
@@ -59,6 +63,7 @@ const CreatorsBrowse = () => {
       premium: false
     },
     {
+      id: 5,
       name: "Kavya Menon",
       initials: "KM",
       specialty: "Content Creator",
@@ -70,6 +75,7 @@ const CreatorsBrowse = () => {
       premium: true
     },
     {
+      id: 6,
       name: "Vikram Singh",
       initials: "VS",
       specialty: "Photographer",
@@ -172,10 +178,12 @@ const CreatorsBrowse = () => {
                       <p className="text-xs text-muted-foreground">per project</p>
                     </div>
 
-                    <Button className="w-full group-hover:gradient-accent transition-all duration-300">
-                      <Users className="h-4 w-4 mr-2" />
-                      View Profile
-                    </Button>
+                    <Link to={`/creator/${creator.id}`}>
+                      <Button className="w-full group-hover:gradient-accent transition-all duration-300">
+                        <Users className="h-4 w-4 mr-2" />
+                        View Profile
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               ))}
