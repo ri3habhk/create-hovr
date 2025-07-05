@@ -16,7 +16,7 @@ const Dashboard = () => {
       title: "E-commerce Brand Identity",
       client: "TechMart Solutions",
       deadline: "2024-07-15",
-      timeRemaining: 85, // percentage
+      timeRemaining: 85,
       status: "In Progress",
       payment: 25000,
       description: "Complete brand identity package including logo, colors, and guidelines"
@@ -26,7 +26,7 @@ const Dashboard = () => {
       title: "Mobile App UI Design",
       client: "StartupXYZ",
       deadline: "2024-07-08",
-      timeRemaining: 25, // percentage - should be yellow
+      timeRemaining: 25,
       status: "In Progress",
       payment: 35000,
       description: "UI/UX design for fitness tracking mobile application"
@@ -36,7 +36,7 @@ const Dashboard = () => {
       title: "Website Redesign",
       client: "Local Restaurant",
       deadline: "2024-07-06",
-      timeRemaining: 10, // percentage - should be red
+      timeRemaining: 10,
       status: "Urgent",
       payment: 18000,
       description: "Complete website redesign with modern responsive layout"
@@ -46,17 +46,17 @@ const Dashboard = () => {
       title: "Product Photography",
       client: "Fashion Brand Co",
       deadline: "2024-07-20",
-      timeRemaining: 95, // percentage
+      timeRemaining: 95,
       status: "Just Started",
       payment: 22000,
       description: "Product photography for new clothing line launch"
     }
   ];
 
-  const getProjectColor = (timeRemaining: number) => {
-    if (timeRemaining < 15) return 'bg-red-50 border-red-200';
-    if (timeRemaining < 30) return 'bg-yellow-50 border-yellow-200';
-    return 'bg-background';
+  const getTextColor = (timeRemaining: number) => {
+    if (timeRemaining < 15) return 'text-red-400';
+    if (timeRemaining < 30) return 'text-yellow-400';
+    return 'text-foreground';
   };
 
   const getStatusColor = (timeRemaining: number) => {
@@ -128,22 +128,22 @@ const Dashboard = () => {
               {projects.map((project) => (
                 <Card 
                   key={project.id} 
-                  className={`${getProjectColor(project.timeRemaining)} border transition-all hover:shadow-md`}
+                  className="gradient-card border-border/50 transition-all hover:shadow-md"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <CardTitle className="text-xl mb-2 flex items-center">
+                        <CardTitle className={`text-xl mb-2 flex items-center ${getTextColor(project.timeRemaining)}`}>
                           {project.title}
                           {project.timeRemaining < 15 && (
-                            <AlertTriangle className="h-5 w-5 ml-2 text-red-500" />
+                            <AlertTriangle className="h-5 w-5 ml-2 text-red-400" />
                           )}
                         </CardTitle>
                         <p className="text-muted-foreground mb-2">Client: {project.client}</p>
                         <p className="text-sm text-muted-foreground">{project.description}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-primary">₹{project.payment.toLocaleString()}</p>
+                        <p className={`text-2xl font-bold ${getTextColor(project.timeRemaining)}`}>₹{project.payment.toLocaleString()}</p>
                         <Badge variant={getStatusColor(project.timeRemaining) as any} className="mt-1">
                           {project.status}
                         </Badge>
@@ -157,7 +157,7 @@ const Dashboard = () => {
                           <Calendar className="h-4 w-4 mr-1" />
                           Deadline: {new Date(project.deadline).toLocaleDateString()}
                         </span>
-                        <span className="font-medium">
+                        <span className={`font-medium ${getTextColor(project.timeRemaining)}`}>
                           {project.timeRemaining}% time remaining
                         </span>
                       </div>

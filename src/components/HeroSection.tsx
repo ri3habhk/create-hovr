@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowDown, Users, Folder, Search } from 'lucide-react';
+import { ArrowDown, Users, Folder, Search, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
@@ -22,21 +22,21 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link to="/creators">
+            <Link to="/post-project">
               <Button size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-lg px-8 py-4 hover-lift">
+                <Plus className="h-5 w-5 mr-2" />
+                Post Project
+              </Button>
+            </Link>
+            <Link to="/creators">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2 hover-lift">
                 <Search className="h-5 w-5 mr-2" />
                 Find Creators
               </Button>
             </Link>
-            <Link to="/auth">
-              <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-2 hover-lift">
-                <Folder className="h-5 w-5 mr-2" />
-                Create Account
-              </Button>
-            </Link>
           </div>
 
-          {/* Stats Cards */}
+          {/* stats cards and trust banner */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
             <Card className="bg-gradient-to-br from-card to-card/80 border-border/50 hover-lift">
               <CardContent className="p-6 text-center">
@@ -60,7 +60,6 @@ const HeroSection = () => {
             </Card>
           </div>
 
-          {/* Trust Banner */}
           <div className="mt-12">
             <Card className="bg-gradient-to-r from-card to-card/80 border-border/50 max-w-2xl mx-auto">
               <CardContent className="p-6">
@@ -74,7 +73,6 @@ const HeroSection = () => {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <ArrowDown className="h-6 w-6 text-muted-foreground" />
       </div>

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 const CreatorShowcase = () => {
   const creators = [
     {
+      id: 1,
       name: "Sarah Chen",
       initials: "SC",
       specialty: "Brand Designer",
@@ -19,6 +20,7 @@ const CreatorShowcase = () => {
       premium: true
     },
     {
+      id: 2,
       name: "Arjun Patel",
       initials: "AP",
       specialty: "Video Editor",
@@ -30,6 +32,7 @@ const CreatorShowcase = () => {
       premium: false
     },
     {
+      id: 3,
       name: "Priya Sharma",
       initials: "PS",
       specialty: "Filmmaker",
@@ -110,10 +113,12 @@ const CreatorShowcase = () => {
                   <p className="text-xs text-muted-foreground">per project</p>
                 </div>
 
-                <Button className="w-full group-hover:gradient-accent transition-all duration-300">
-                  <Users className="h-4 w-4 mr-2" />
-                  View Profile
-                </Button>
+                <Link to={`/creator/${creator.id}`}>
+                  <Button className="w-full group-hover:gradient-accent transition-all duration-300">
+                    <Users className="h-4 w-4 mr-2" />
+                    View Profile
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ))}

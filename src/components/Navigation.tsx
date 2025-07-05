@@ -8,8 +8,8 @@ const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
+    { name: 'Post Project', href: '/post-project' },
     { name: 'Find Creators', href: '/creators' },
-    { name: 'Create', href: '#create' },
     { name: 'How It Works', href: '#how-it-works' },
     { name: 'Pricing', href: '/pricing' },
     { name: 'Get Help', href: '#help' },
@@ -64,7 +64,7 @@ const Navigation = () => {
                 Sign In
               </Button>
             </Link>
-            <Link to="/auth">
+            <Link to="/get-started">
               <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Get Started
@@ -110,7 +110,7 @@ const Navigation = () => {
                         Sign In
                       </Button>
                     </Link>
-                    <Link to="/auth">
+                    <Link to="/get-started">
                       <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white w-full">
                         <Plus className="h-4 w-4 mr-2" />
                         Get Started
