@@ -10,64 +10,41 @@ const Navigation = () => {
   const navItems = [
     { name: 'Post Project', href: '/post-project' },
     { name: 'Find Creators', href: '/creators' },
-    { name: 'How It Works', href: '#how-it-works' },
-    { name: 'Pricing', href: '/pricing' },
-    { name: 'Get Help', href: '#help' },
     { name: 'Dashboard', href: '/dashboard' },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="fixed top-0 z-50 w-full border-b border-border/20 bg-background/95 backdrop-blur-sm">
+      <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <Link to="/">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Hovr
-                </h1>
-              </Link>
-            </div>
-          </div>
+          <Link to="/" className="text-xl font-bold">
+            Hovr
+          </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
-              {navItems.map((item) => (
-                item.href.startsWith('#') ? (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors duration-200"
-                  >
-                    {item.name}
-                  </a>
-                ) : (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors duration-200"
-                  >
-                    {item.name}
-                  </Link>
-                )
-              ))}
-            </div>
+          <div className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-3">
             <Link to="/auth">
-              <Button variant="ghost" size="sm">
-                <User className="h-4 w-4 mr-2" />
+              <Button variant="ghost" size="sm" className="text-xs">
                 Sign In
               </Button>
             </Link>
-            <Link to="/get-started">
-              <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
-                <Plus className="h-4 w-4 mr-2" />
-                Get Started
+            <Link to="/auth">
+              <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90 text-xs px-4">
+                Sign Up
               </Button>
             </Link>
           </div>
@@ -77,46 +54,21 @@ const Navigation = () => {
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="sm">
-                  <Menu className="h-5 w-5" />
+                  <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetContent side="right" className="w-[280px]">
                 <div className="flex flex-col space-y-4 mt-8">
                   {navItems.map((item) => (
-                    item.href.startsWith('#') ? (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors duration-200"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </a>
-                    ) : (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className="text-muted-foreground hover:text-foreground px-3 py-2 text-sm font-medium transition-colors duration-200"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    )
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
                   ))}
-                  <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                    <Link to="/auth">
-                      <Button variant="ghost" size="sm" className="w-full justify-start">
-                        <User className="h-4 w-4 mr-2" />
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link to="/get-started">
-                      <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white w-full">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Get Started
-                      </Button>
-                    </Link>
-                  </div>
                 </div>
               </SheetContent>
             </Sheet>

@@ -15,12 +15,7 @@ const Index = () => {
       <Navigation />
       <main>
         <HeroSection />
-        <PaymentTerms />
         <CreatorShowcase />
-        <CreateSection />
-        <HowItWorks />
-        <PricingSection />
-        <HelpSection />
       </main>
       <Footer />
     </div>
