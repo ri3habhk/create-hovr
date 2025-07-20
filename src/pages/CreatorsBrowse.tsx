@@ -97,7 +97,7 @@ const CreatorsBrowse = () => {
             <div className="text-center mb-16">
               <h1 className="text-3xl md:text-5xl font-bold mb-6">
                 Browse All
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Creators</span>
+                <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> Creators</span>
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Discover talented professionals ready to bring your marketing vision to life
@@ -135,57 +135,51 @@ const CreatorsBrowse = () => {
             {/* Creators Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {creators.map((creator, index) => (
-                <Card key={index} className="gradient-card border-border/50 hover-lift group overflow-hidden">
-                  <CardHeader className="pb-4">
-                    <div className="relative">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center">
-                        <span className="text-2xl font-bold text-primary">{creator.initials}</span>
+                <Link key={index} to={`/creator/${creator.id}`} className="block">
+                  <Card className="bg-card/50 border-border/50 hover-lift group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg">
+                    <CardHeader className="pb-4">
+                      <div className="relative">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-primary">{creator.initials}</span>
+                        </div>
+                        {creator.premium && (
+                          <Badge className="absolute -top-2 -right-2 bg-primary/20 text-primary border-primary/30">
+                            Premium
+                          </Badge>
+                        )}
                       </div>
-                      {creator.premium && (
-                        <Badge className="absolute -top-2 -right-2 gradient-accent">
-                          Premium
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="text-center">
-                      <h3 className="font-bold text-lg">{creator.name}</h3>
-                      <p className="text-primary font-medium">{creator.specialty}</p>
-                      <p className="text-sm text-muted-foreground">{creator.location}</p>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                        <span className="font-medium">{creator.rating}</span>
+                      <div className="text-center">
+                        <h3 className="font-bold text-lg">{creator.name}</h3>
+                        <p className="text-primary font-medium">{creator.specialty}</p>
+                        <p className="text-sm text-muted-foreground">{creator.location}</p>
                       </div>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Folder className="h-4 w-4 mr-1" />
-                        {creator.projects} projects
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                          <span className="font-medium">{creator.rating}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Folder className="h-4 w-4 mr-1" />
+                          {creator.projects} projects
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {creator.tags.map((tag, tagIndex) => (
-                        <Badge key={tagIndex} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {creator.tags.map((tag, tagIndex) => (
+                          <Badge key={tagIndex} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
 
-                    <div className="text-center mb-4">
-                      <p className="text-sm font-medium text-primary">{creator.priceRange}</p>
-                      <p className="text-xs text-muted-foreground">per project</p>
-                    </div>
-
-                    <Link to={`/creator/${creator.id}`}>
-                      <Button className="w-full group-hover:gradient-accent transition-all duration-300">
-                        <Users className="h-4 w-4 mr-2" />
-                        View Profile
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                      <div className="text-center mb-4">
+                        <p className="text-sm font-medium text-primary">{creator.priceRange}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>

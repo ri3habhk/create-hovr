@@ -42,14 +42,14 @@ const PostProject = () => {
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold mb-4">
                 Post Your
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Project</span>
+                <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> Project</span>
               </h1>
               <p className="text-xl text-muted-foreground">
                 Find the perfect creator for your project with AI-powered matching
               </p>
             </div>
 
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader>
                 <CardTitle className="flex items-center text-2xl">
                   <Plus className="h-6 w-6 mr-2" />
@@ -182,7 +182,7 @@ const PostProject = () => {
                 </div>
 
                 <div className="pt-6 border-t border-border">
-                  <Button className="w-full gradient-accent" size="lg">
+                  <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
                     <Plus className="h-5 w-5 mr-2" />
                     Post Project & Find Creators
                   </Button>

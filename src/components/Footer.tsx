@@ -1,6 +1,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Mail, Users, Folder } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   const footerLinks = {
@@ -38,6 +39,9 @@ const Footer = () => {
       'Payment Terms',
       'Creator Agreement',
       'Client Agreement'
+    ],
+    Plans: [
+      'Subscription Plans'
     ]
   };
 
@@ -67,16 +71,31 @@ const Footer = () => {
             <div key={category} className="lg:col-span-1">
               <h4 className="font-semibold mb-4 text-foreground">{category}</h4>
               <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {links.map((link) => {
+                  const getLink = (linkName: string) => {
+                    switch (linkName) {
+                      case 'Terms of Service':
+                        return '/terms';
+                      case 'Privacy Policy':
+                        return '/privacy';
+                      case 'Subscription Plans':
+                        return '/subscription';
+                      default:
+                        return '#';
+                    }
+                  };
+
+                  return (
+                    <li key={link}>
+                      <Link
+                        to={getLink(link)}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors duration-200"
+                      >
+                        {link}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

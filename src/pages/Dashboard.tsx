@@ -77,45 +77,45 @@ const Dashboard = () => {
 
           {/* Earnings Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center">
-                  <DollarSign className="h-5 w-5 mr-2 text-green-600" />
+                  <DollarSign className="h-5 w-5 mr-2" />
                   Total Earnings
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-green-600">
+                <p className="text-3xl font-bold text-green-400">
                   ₹{totalEarnings.toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">Lifetime earnings</p>
               </CardContent>
             </Card>
 
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center">
-                  <Clock className="h-5 w-5 mr-2 text-orange-600" />
+                  <Clock className="h-5 w-5 mr-2" />
                   Pending Payments
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-orange-600">
+                <p className="text-3xl font-bold text-orange-400">
                   ₹{pendingEarnings.toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">Awaiting completion</p>
               </CardContent>
             </Card>
 
-            <Card className="gradient-card border-border/50">
+            <Card className="bg-card/50 border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center">
-                  <CheckCircle className="h-5 w-5 mr-2 text-blue-600" />
+                  <CheckCircle className="h-5 w-5 mr-2" />
                   Active Projects
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-blue-600">{projects.length}</p>
+                <p className="text-3xl font-bold text-blue-400">{projects.length}</p>
                 <p className="text-sm text-muted-foreground mt-1">Currently working on</p>
               </CardContent>
             </Card>
@@ -128,7 +128,7 @@ const Dashboard = () => {
               {projects.map((project) => (
                 <Card 
                   key={project.id} 
-                  className="gradient-card border-border/50 transition-all hover:shadow-md"
+                  className="bg-card/50 border-border/50 transition-all hover:shadow-md"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex justify-between items-start">

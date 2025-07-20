@@ -1,12 +1,10 @@
 
 import Navigation from '@/components/Navigation';
 import HeroSection from '@/components/HeroSection';
-import PaymentTerms from '@/components/PaymentTerms';
-import HowItWorks from '@/components/HowItWorks';
 import CreatorShowcase from '@/components/CreatorShowcase';
-import CreateSection from '@/components/CreateSection';
-import PricingSection from '@/components/PricingSection';
-import HelpSection from '@/components/HelpSection';
+import PaymentSection from '@/components/PaymentSection';
+import CreatePortfolioSection from '@/components/CreatePortfolioSection';
+import HowItWorksSection from '@/components/HowItWorksSection';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -16,6 +14,9 @@ const Index = () => {
       <main>
         <HeroSection />
         <CreatorShowcase />
+        <PaymentSection />
+        <CreatePortfolioSection />
+        <HowItWorksSection />
       </main>
       <Footer />
     </div>
