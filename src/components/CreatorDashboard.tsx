@@ -2,7 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Settings, Upload, Eye, MessageSquare, TrendingUp, DollarSign, Clock, CheckCircle } from 'lucide-react';
-import Navigation from '@/components/Navigation';
 
 const CreatorDashboard = () => {
   const stats = {
@@ -28,12 +27,10 @@ const CreatorDashboard = () => {
   ];
 
   return (
-    <>
-      <Navigation />
-      <main className="pt-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
+    <main className="py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-foreground">Creator Dashboard</h1>
               <p className="text-muted-foreground">Manage your creative business</p>
@@ -182,7 +179,6 @@ const CreatorDashboard = () => {
           </div>
         </div>
       </main>
-    </>
   );
 };
 

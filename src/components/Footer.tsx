@@ -102,7 +102,7 @@ const Footer = () => {
         <div className="border-t border-border/40 pt-8 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h4 className="font-semibold mb-4 text-primary">Payment Security</h4>
+              <h4 className="font-semibold mb-4 text-foreground">Payment Security</h4>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Secure escrow payment system</li>
                 <li>• 30% upfront, 70% on completion</li>
@@ -111,7 +111,7 @@ const Footer = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4 text-primary">Quality Assurance</h4>
+              <h4 className="font-semibold mb-4 text-foreground">Quality Assurance</h4>
               <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• Verified creator profiles</li>
                 <li>• Portfolio validation system</li>
@@ -125,7 +125,7 @@ const Footer = () => {
         {/* Platform Operations Transparency */}
         <div className="border-t border-border/40 pt-8 mb-8">
           <div className="max-w-4xl mx-auto">
-            <h4 className="font-semibold mb-4 text-primary text-center">Why Our 10% Platform Fee?</h4>
+            <h4 className="font-semibold mb-4 text-foreground text-center">Why Our 10% Platform Fee?</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
               <div>
                 <h5 className="font-medium text-foreground mb-2">Security & Trust</h5>
@@ -154,7 +154,7 @@ const Footer = () => {
               © 2024 Hovr. All rights reserved. Building the future of creative collaboration.
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                 <Mail className="h-4 w-4 mr-2" />
                 Contact Support
               </Button>
