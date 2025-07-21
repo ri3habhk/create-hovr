@@ -14,6 +14,7 @@ import Pricing from "./pages/Pricing";
 import PostProject from "./pages/PostProject";
 import GetStarted from "./pages/GetStarted";
 import Subscription from "./pages/Subscription";
+import Payment from "./pages/Payment";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
@@ -36,9 +37,10 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/post-project" element={<PostProject />} />
           <Route path="/get-started" element={<GetStarted />} />
-          <Route path="/subscription" element={<Subscription />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
+        <Route path="/subscription" element={<Subscription />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

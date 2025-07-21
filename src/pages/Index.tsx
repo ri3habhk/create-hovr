@@ -5,6 +5,7 @@ import CreatorShowcase from '@/components/CreatorShowcase';
 import PaymentSection from '@/components/PaymentSection';
 import CreatePortfolioSection from '@/components/CreatePortfolioSection';
 import HowItWorksSection from '@/components/HowItWorksSection';
+import SubscriptionSection from '@/components/SubscriptionSection';
 import Footer from '@/components/Footer';
 
 const Index = () => {
@@ -17,6 +18,7 @@ const Index = () => {
         <PaymentSection />
         <CreatePortfolioSection />
         <HowItWorksSection />
+        <SubscriptionSection />
       </main>
       <Footer />
     </div>

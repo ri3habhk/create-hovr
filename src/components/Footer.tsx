@@ -39,9 +39,6 @@ const Footer = () => {
       'Payment Terms',
       'Creator Agreement',
       'Client Agreement'
-    ],
-    Plans: [
-      'Subscription Plans'
     ]
   };
 
@@ -52,14 +49,14 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-12">
           {/* Logo and Description */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
+            <h3 className="text-2xl font-bold text-foreground mb-4">
               Hovr
             </h3>
             <p className="text-muted-foreground text-sm mb-6">
               The premier marketplace connecting brands with elite marketing creators worldwide.
             </p>
             <div className="flex space-x-2">
-              <Button size="sm" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white">
+              <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90">
                 <Users className="h-4 w-4 mr-2" />
                 Join Now
               </Button>
