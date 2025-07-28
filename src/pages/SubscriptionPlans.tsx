@@ -46,7 +46,6 @@ const SubscriptionPlans = () => {
         "Unlimited project applications",
         "Direct client messaging",
         "Profile verification badge",
-        "Commission-free first 3 projects",
         "24/7 priority support"
       ],
       limitations: [],
@@ -62,9 +61,8 @@ const SubscriptionPlans = () => {
         "Advanced creator search & filters",
         "Direct contact with creators",
         "Project management tools",
-        "Priority support",
         "Team collaboration features",
-        "Bulk messaging capabilities",
+        "24/7 priority support",
         "Custom branding options"
       ],
       limitations: [],
@@ -74,13 +72,10 @@ const SubscriptionPlans = () => {
 
   const comparisonFeatures = [
     { feature: "Portfolio Projects", free: "3", creator: "Unlimited", business: "N/A" },
-    { feature: "Project Applications", free: "5/month", creator: "Unlimited", business: "N/A" },
-    { feature: "Search Priority", free: "Low", creator: "High", business: "Highest" },
-    { feature: "Analytics Dashboard", free: "No", creator: "Yes", business: "Yes" },
-    { feature: "Direct Messaging", free: "Basic", creator: "Advanced", business: "Premium" },
-    { feature: "Support", free: "Community", creator: "Priority", business: "Dedicated" },
-    { feature: "Commission", free: "10%", creator: "5% (First 3 free)", business: "3%" },
-    { feature: "Profile Verification", free: "No", creator: "Yes", business: "Yes" }
+    { feature: "Search Priority", free: "Low", creator: "High", business: "High" },
+    { feature: "Analytics", free: "No", creator: "Yes", business: "Yes" },
+    { feature: "Support", free: "Community", creator: "Priority", business: "Priority" },
+    { feature: "Direct Messaging", free: "Basic", creator: "Advanced", business: "Advanced" }
   ];
 
   return (
@@ -115,7 +110,9 @@ const SubscriptionPlans = () => {
                 className={`relative cursor-pointer transition-all duration-300 hover:scale-105 ${
                   plan.popular 
                     ? 'border-foreground shadow-lg' 
-                    : 'bg-card/50 border-border/50 hover:border-border'
+                    : plan.type === 'free'
+                      ? 'bg-card/30 border-border/30 cursor-not-allowed'
+                      : 'bg-card/50 border-border/50 hover:border-border'
                 }`}
                 onClick={() => plan.type !== 'free' && handlePlanClick(plan)}
               >
@@ -160,34 +157,15 @@ const SubscriptionPlans = () => {
                       </ul>
                     </div>
                   )}
-
-                  <Button 
-                    className={`w-full mt-6 ${
-                      plan.type === 'free' 
-                        ? 'bg-muted text-muted-foreground cursor-not-allowed' 
-                        : plan.popular
-                          ? 'bg-foreground text-background hover:bg-foreground/90'
-                          : 'bg-foreground text-background hover:bg-foreground/90'
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (plan.type !== 'free') {
-                        handlePlanClick(plan);
-                      }
-                    }}
-                    disabled={plan.type === 'free'}
-                  >
-                    {plan.type === 'free' ? 'Current Plan' : 'Get Started'}
-                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          {/* Comparison Table */}
+          {/* Minimal Comparison Table */}
           <div className="bg-card/50 border border-border/50 rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
-              Detailed Feature Comparison
+            <h2 className="text-xl font-bold text-foreground mb-4 text-center">
+              Quick Comparison
             </h2>
             
             <div className="overflow-x-auto">
