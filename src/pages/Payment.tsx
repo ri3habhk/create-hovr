@@ -12,7 +12,14 @@ const Payment = () => {
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState('card');
   
-  const planData = location.state || {};
+  // Handle plan data from location state
+  const { plan } = location.state || {};
+  const planData = plan || {
+    name: 'Default Plan',
+    price: '₹299',
+    period: '/month',
+    type: 'creator'
+  };
 
   const paymentMethods = [
     {
@@ -37,7 +44,8 @@ const Payment = () => {
 
   const handlePayment = () => {
     // Simulate payment processing
-    alert(`Processing payment of ${planData.price} via ${paymentMethods.find(m => m.id === selectedMethod)?.name}`);
+    const selectedPaymentMethod = paymentMethods.find(m => m.id === selectedMethod);
+    alert(`Processing payment of ${planData.price} via ${selectedPaymentMethod?.name || 'Selected Method'}`);
     navigate('/dashboard');
   };
 
@@ -69,7 +77,7 @@ const Payment = () => {
               <CardContent>
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="font-semibold text-foreground">{planData.plan}</h3>
+                    <h3 className="font-semibold text-foreground">{planData.name}</h3>
                     <p className="text-sm text-muted-foreground">
                       {planData.type === 'creator' ? 'Creator Plan' : 'Client Plan'}
                     </p>
