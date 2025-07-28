@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Check, Star, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,15 +10,15 @@ const SubscriptionSection = () => {
   const plans = {
     creators: [
       {
-        name: "Professional",
-        price: "₹999",
+        name: "Creator Plan",
+        price: "₹299",
         period: "/month",
-        description: "For established creators",
+        description: "Perfect for individual creators",
         features: [
-          "Premium portfolio",
-          "Unlimited projects",
-          "Priority support",
-          "Advanced analytics"
+          "Portfolio showcase",
+          "Direct client messages",
+          "Project bidding",
+          "Analytics dashboard"
         ],
         popular: true,
         type: "creator"
@@ -25,15 +26,15 @@ const SubscriptionSection = () => {
     ],
     clients: [
       {
-        name: "Business",
-        price: "₹1,499",
+        name: "Business Plan",
+        price: "₹499",
         period: "/month",
-        description: "For growing businesses",
+        description: "For businesses and agencies",
         features: [
-          "Unlimited projects",
-          "AI-powered matching",
-          "Priority support",
-          "Advanced search filters"
+          "Unlimited project postings",
+          "Advanced creator search",
+          "Direct contact access",
+          "Team collaboration"
         ],
         popular: true,
         type: "client"
@@ -130,6 +131,17 @@ const SubscriptionSection = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        {/* View More Plans Button */}
+        <div className="flex justify-center mt-8">
+          <Button
+            variant="outline"
+            onClick={() => navigate('/subscription-plans')}
+            className="border-border/50 text-foreground hover:bg-card"
+          >
+            View More Plans & Compare Features
+          </Button>
         </div>
       </div>
     </section>

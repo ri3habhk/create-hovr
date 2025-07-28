@@ -14,7 +14,7 @@ const DashboardSelector = () => {
       <Navigation />
       
       {/* Dashboard Type Selector */}
-      <div className="border-b border-border/40 bg-background sticky top-20 z-10">
+      <div className="border-b border-border/40 bg-background sticky top-0 z-50 mt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center py-6">
             <Card className="bg-card/50 border-border/50 p-1">
@@ -54,7 +54,7 @@ const DashboardSelector = () => {
       </div>
 
       {/* Dashboard Content */}
-      <div className="pt-0">
+      <div className="relative z-10">
         {selectedDashboard === 'creator' ? <CreatorDashboard /> : <ClientDashboard />}
       </div>
     </div>

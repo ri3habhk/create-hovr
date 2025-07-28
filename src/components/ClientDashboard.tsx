@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, TrendingUp } from 'lucide-react';
 
 const ClientDashboard = () => {
+  const [hoveredActivity, setHoveredActivity] = useState<number | null>(null);
+
   const stats = {
     briefsPosted: 12,
     responses: 48,
@@ -12,10 +15,10 @@ const ClientDashboard = () => {
   };
 
   const activities = [
-    { label: 'Brief Responses', value: 75, color: 'bg-blue-500' },
-    { label: 'Creator Views', value: 90, color: 'bg-green-500' },
-    { label: 'Messages Sent', value: 65, color: 'bg-purple-500' },
-    { label: 'Projects Completed', value: 85, color: 'bg-orange-500' }
+    { label: 'Brief Responses', value: 75, count: 156, color: 'bg-blue-500' },
+    { label: 'Creator Views', value: 90, count: 234, color: 'bg-green-500' },
+    { label: 'Messages Sent', value: 65, count: 89, color: 'bg-purple-500' },
+    { label: 'Projects Completed', value: 85, count: 28, color: 'bg-orange-500' }
   ];
 
   const recommendedCreators = [
@@ -122,16 +125,26 @@ const ClientDashboard = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {activities.map((activity, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-2 relative">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">{activity.label}</span>
                           <span className="text-sm font-medium text-foreground">{activity.value}%</span>
                         </div>
-                        <div className="w-full bg-border/50 rounded-full h-2">
+                        <div 
+                          className="w-full bg-border/50 rounded-full h-2 relative cursor-pointer"
+                          onMouseEnter={() => setHoveredActivity(index)}
+                          onMouseLeave={() => setHoveredActivity(null)}
+                        >
                           <div 
-                            className={`h-2 rounded-full ${activity.color}`}
+                            className={`h-2 rounded-full ${activity.color} transition-all duration-200 hover:opacity-80`}
                             style={{ width: `${activity.value}%` }}
                           />
+                          {hoveredActivity === index && (
+                            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg">
+                              {activity.value}% ({activity.count} total)
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-foreground"></div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}

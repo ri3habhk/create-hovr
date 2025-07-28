@@ -1,23 +1,30 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Bell, Settings, Upload, Eye, MessageSquare, TrendingUp, DollarSign, Clock, CheckCircle } from 'lucide-react';
 
 const CreatorDashboard = () => {
+  const [hoveredActivity, setHoveredActivity] = useState<number | null>(null);
+  const [earningsView, setEarningsView] = useState<'weekly' | 'monthly'>('monthly');
+
   const stats = {
     profileViews: 1240,
     pendingProjects: 3,
     unreadMessages: 7,
     totalEarnings: 125000,
+    weeklyEarnings: 8500,
+    monthlyEarnings: 32000,
     pendingEarnings: 45000,
     activeProjects: 4
   };
 
   const activities = [
-    { label: 'Profile Views', value: 85, color: 'bg-blue-500' },
-    { label: 'Project Responses', value: 60, color: 'bg-green-500' },
-    { label: 'Message Replies', value: 95, color: 'bg-purple-500' },
-    { label: 'Portfolio Updates', value: 40, color: 'bg-orange-500' }
+    { label: 'Profile Views', value: 85, count: 1054, color: 'bg-blue-500' },
+    { label: 'Project Responses', value: 60, count: 72, color: 'bg-green-500' },
+    { label: 'Message Replies', value: 95, count: 114, color: 'bg-purple-500' },
+    { label: 'Portfolio Updates', value: 40, count: 12, color: 'bg-orange-500' }
   ];
 
   const tips = [
@@ -77,12 +84,24 @@ const CreatorDashboard = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center text-foreground">
                   <DollarSign className="h-5 w-5 mr-2" />
-                  Total Earnings
+                  Earnings
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-foreground">₹{stats.totalEarnings.toLocaleString()}</p>
-                <p className="text-sm text-muted-foreground">Lifetime</p>
+                <Tabs value={earningsView} onValueChange={(value) => setEarningsView(value as 'weekly' | 'monthly')} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 mb-3">
+                    <TabsTrigger value="weekly">Weekly</TabsTrigger>
+                    <TabsTrigger value="monthly">Monthly</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="weekly">
+                    <p className="text-3xl font-bold text-foreground">₹{stats.weeklyEarnings.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">This week</p>
+                  </TabsContent>
+                  <TabsContent value="monthly">
+                    <p className="text-3xl font-bold text-foreground">₹{stats.monthlyEarnings.toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground">This month</p>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
@@ -102,16 +121,26 @@ const CreatorDashboard = () => {
                 <CardContent>
                   <div className="space-y-4">
                     {activities.map((activity, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-2 relative">
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">{activity.label}</span>
                           <span className="text-sm font-medium text-foreground">{activity.value}%</span>
                         </div>
-                        <div className="w-full bg-border/50 rounded-full h-2">
+                        <div 
+                          className="w-full bg-border/50 rounded-full h-2 relative cursor-pointer"
+                          onMouseEnter={() => setHoveredActivity(index)}
+                          onMouseLeave={() => setHoveredActivity(null)}
+                        >
                           <div 
-                            className={`h-2 rounded-full ${activity.color}`}
+                            className={`h-2 rounded-full ${activity.color} transition-all duration-200 hover:opacity-80`}
                             style={{ width: `${activity.value}%` }}
                           />
+                          {hoveredActivity === index && (
+                            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg">
+                              {activity.value}% ({activity.count} total)
+                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-foreground"></div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
