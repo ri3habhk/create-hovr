@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
 import PostProject from "./pages/PostProject";
+import Projects from "./pages/Projects";
 import GetStarted from "./pages/GetStarted";
 import Subscription from "./pages/Subscription";
 import SubscriptionPlans from "./pages/SubscriptionPlans";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/post-project" element={<PostProject />} />
+          <Route path="/projects" element={<Projects />} />
           <Route path="/get-started" element={<GetStarted />} />
           <Route path="/subscription" element={<Subscription />} />
           <Route path="/subscription-plans" element={<SubscriptionPlans />} />

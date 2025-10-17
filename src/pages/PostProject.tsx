@@ -10,7 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, X, MapPin, DollarSign, Clock, Users } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const PostProject = () => {
   const [projectName, setProjectName] = useState('');
@@ -21,6 +23,9 @@ const PostProject = () => {
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -31,6 +36,61 @@ const PostProject = () => {
 
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleSubmit = async () => {
+    if (!projectName || !budget || !timeline || !freelancerType || !description) {
+      toast({
+        title: 'Missing Information',
+        description: 'Please fill in all required fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: 'Authentication Required',
+          description: 'Please sign in to post a project',
+          variant: 'destructive',
+        });
+        navigate('/auth');
+        return;
+      }
+
+      const { error } = await supabase.from('projects').insert({
+        user_id: user.id,
+        project_name: projectName,
+        location: location || 'Remote',
+        budget,
+        timeline,
+        freelancer_type: freelancerType,
+        description,
+        tags,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success!',
+        description: 'Your project has been posted',
+      });
+      
+      navigate('/projects');
+    } catch (error) {
+      console.error('Error posting project:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to post project. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -182,9 +242,14 @@ const PostProject = () => {
                 </div>
 
                 <div className="pt-6 border-t border-border">
-                  <Button className="w-full bg-primary hover:bg-primary/90" size="lg">
+                  <Button 
+                    className="w-full bg-primary hover:bg-primary/90" 
+                    size="lg"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                  >
                     <Plus className="h-5 w-5 mr-2" />
-                    Post Project & Find Creators
+                    {loading ? 'Posting...' : 'Post Project & Find Creators'}
                   </Button>
                   <p className="text-center text-sm text-muted-foreground mt-4">
                     By posting, you agree to our Terms of Service and Privacy Policy
