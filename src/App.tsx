@@ -10,6 +10,9 @@ import CreatorProfile from "./pages/CreatorProfile";
 import Upload from "./pages/Upload";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
+import RoleSelection from "./pages/RoleSelection";
+import PortfolioSetup from "./pages/PortfolioSetup";
+import Settings from "./pages/Settings";
 import Pricing from "./pages/Pricing";
 import PostProject from "./pages/PostProject";
 import Projects from "./pages/Projects";
@@ -35,7 +38,10 @@ const App = () => (
           <Route path="/creator/:id" element={<CreatorProfile />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/role-selection" element={<RoleSelection />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/portfolio-setup" element={<PortfolioSetup />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/post-project" element={<PostProject />} />
           <Route path="/projects" element={<Projects />} />

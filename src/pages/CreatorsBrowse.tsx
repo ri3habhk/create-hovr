@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Star, Users, Folder, Search, Filter } from 'lucide-react';
+import { Star, MapPin, Folder, Search, Filter } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
@@ -12,81 +12,44 @@ import { Link } from 'react-router-dom';
 const CreatorsBrowse = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [creators, setCreators] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const creators = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      initials: "SC",
-      specialty: "Brand Designer",
-      rating: 4.9,
-      projects: 127,
-      location: "Mumbai, India",
-      tags: ["Logo Design", "Brand Identity", "UI/UX"],
-      priceRange: "₹5,000 - ₹25,000",
-      premium: true
-    },
-    {
-      id: 2,
-      name: "Arjun Patel",
-      initials: "AP",
-      specialty: "Video Editor",
-      rating: 4.8,
-      projects: 89,
-      location: "Delhi, India",
-      tags: ["Motion Graphics", "Color Grading", "Social Media"],
-      priceRange: "₹3,000 - ₹15,000",
-      premium: false
-    },
-    {
-      id: 3,
-      name: "Priya Sharma",
-      initials: "PS",
-      specialty: "Filmmaker",
-      rating: 5.0,
-      projects: 45,
-      location: "Bangalore, India",
-      tags: ["Cinematography", "Documentary", "Commercial"],
-      priceRange: "₹10,000 - ₹50,000",
-      premium: true
-    },
-    {
-      id: 4,
-      name: "Raj Kumar",
-      initials: "RK",
-      specialty: "Graphic Designer",
-      rating: 4.7,
-      projects: 156,
-      location: "Chennai, India",
-      tags: ["Print Design", "Packaging", "Illustrations"],
-      priceRange: "₹4,000 - ₹20,000",
-      premium: false
-    },
-    {
-      id: 5,
-      name: "Kavya Menon",
-      initials: "KM",
-      specialty: "Content Creator",
-      rating: 4.9,
-      projects: 203,
-      location: "Kochi, India",
-      tags: ["Social Media", "Copywriting", "Strategy"],
-      priceRange: "₹2,500 - ₹12,000",
-      premium: true
-    },
-    {
-      id: 6,
-      name: "Vikram Singh",
-      initials: "VS",
-      specialty: "Photographer",
-      rating: 4.8,
-      projects: 98,
-      location: "Jaipur, India",
-      tags: ["Portrait", "Product", "Event"],
-      priceRange: "₹8,000 - ₹35,000",
-      premium: true
+  useEffect(() => {
+    loadCreators();
+  }, []);
+
+  const loadCreators = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('creator_portfolios')
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            avatar_url
+          )
+        `)
+        .eq('is_published', true);
+
+      if (error) throw error;
+
+      setCreators(data || []);
+    } catch (error) {
+      console.error('Error loading creators:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,55 +96,74 @@ const CreatorsBrowse = () => {
             </div>
 
             {/* Creators Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {creators.map((creator, index) => (
-                <Link key={index} to={`/creator/${creator.id}`} className="block">
-                  <Card className="bg-card/50 border-border/50 hover-lift group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg">
-                    <CardHeader className="pb-4">
-                      <div className="relative">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center">
-                          <span className="text-2xl font-bold text-primary">{creator.initials}</span>
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading creators...</p>
+              </div>
+            ) : creators.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No creators found. Be the first to create your portfolio!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {creators.map((creator) => (
+                  <Link key={creator.id} to={`/creator/${creator.user_id}`} className="block">
+                    <Card className="bg-card/50 border-border/50 hover-lift group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg">
+                      <CardHeader className="pb-4">
+                        <div className="relative">
+                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                            {creator.profiles?.avatar_url ? (
+                              <img src={creator.profiles.avatar_url} alt={creator.profiles.full_name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-2xl font-bold text-primary">
+                                {getInitials(creator.profiles?.full_name || 'U')}
+                              </span>
+                            )}
+                          </div>
                         </div>
-                        {creator.premium && (
-                          <Badge className="absolute -top-2 -right-2 bg-primary/20 text-primary border-primary/30">
-                            Premium
-                          </Badge>
+                        <div className="text-center">
+                          <h3 className="font-bold text-lg">{creator.profiles?.full_name}</h3>
+                          <p className="text-primary font-medium">{creator.title}</p>
+                          {creator.location && (
+                            <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground mt-1">
+                              <MapPin className="h-3 w-3" />
+                              <span>{creator.location}</span>
+                            </div>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        {creator.experience_years && (
+                          <div className="text-center mb-4">
+                            <p className="text-sm text-muted-foreground">
+                              {creator.experience_years} years experience
+                            </p>
+                          </div>
                         )}
-                      </div>
-                      <div className="text-center">
-                        <h3 className="font-bold text-lg">{creator.name}</h3>
-                        <p className="text-primary font-medium">{creator.specialty}</p>
-                        <p className="text-sm text-muted-foreground">{creator.location}</p>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                          <span className="font-medium">{creator.rating}</span>
-                        </div>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <Folder className="h-4 w-4 mr-1" />
-                          {creator.projects} projects
-                        </div>
-                      </div>
 
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {creator.tags.map((tag, tagIndex) => (
-                          <Badge key={tagIndex} variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
+                        {creator.skills && creator.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {creator.skills.slice(0, 3).map((skill: string, index: number) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
 
-                      <div className="text-center mb-4">
-                        <p className="text-sm font-medium text-primary">{creator.priceRange}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+                        {creator.hourly_rate && (
+                          <div className="text-center">
+                            <p className="text-sm font-medium text-primary">
+                              ${creator.hourly_rate}/hour
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </main>
