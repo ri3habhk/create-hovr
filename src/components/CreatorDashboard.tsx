@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +9,7 @@ import { Bell, Settings, Upload, Eye, MessageSquare, TrendingUp, DollarSign, Clo
 const CreatorDashboard = () => {
   const [hoveredActivity, setHoveredActivity] = useState<number | null>(null);
   const [earningsView, setEarningsView] = useState<'weekly' | 'monthly'>('monthly');
+  const navigate = useNavigate();
 
   const stats = {
     profileViews: 1240,
@@ -46,7 +48,11 @@ const CreatorDashboard = () => {
               <Button variant="ghost" size="sm">
                 <Bell className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm">
+              <Button 
+                onClick={() => navigate('/settings')}
+                variant="ghost" 
+                size="sm"
+              >
                 <Settings className="h-4 w-4" />
               </Button>
             </div>
@@ -182,7 +188,10 @@ const CreatorDashboard = () => {
                   <CardTitle className="text-foreground">Quick Upload</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Button className="w-full bg-foreground text-background hover:bg-foreground/90">
+                  <Button 
+                    onClick={() => navigate('/portfolio-setup')}
+                    className="w-full bg-foreground text-background hover:bg-foreground/90"
+                  >
                     <Upload className="h-4 w-4 mr-2" />
                     Add to Portfolio
                   </Button>

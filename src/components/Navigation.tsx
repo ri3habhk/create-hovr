@@ -53,11 +53,15 @@ const Navigation = () => {
     navigate('/');
   };
 
-  const navItems = [
+  const navItems = user ? [
     { name: 'Post Project', href: '/post-project' },
     { name: 'Find Creators', href: '/creators' },
     { name: 'Projects', href: '/projects' },
     { name: 'Dashboard', href: '/dashboard' },
+  ] : [
+    { name: 'Post Project', href: '/post-project' },
+    { name: 'Find Creators', href: '/creators' },
+    { name: 'Projects', href: '/projects' },
   ];
 
   return (

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, X, MapPin, DollarSign, Clock, Users } from 'lucide-react';
+import { Plus, X, MapPin, DollarSign, Clock, Users, LogIn } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -24,8 +24,32 @@ const PostProject = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState<boolean | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    checkUserRole();
+  }, []);
+
+  const checkUserRole = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      setIsClient(false);
+      setCheckingAuth(false);
+      return;
+    }
+
+    const { data: roles } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id);
+
+    setIsClient(roles?.some(r => r.role === 'client') || false);
+    setCheckingAuth(false);
+  };
 
   const addTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -92,6 +116,67 @@ const PostProject = () => {
       setLoading(false);
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-center">
+              <p className="text-muted-foreground">Loading...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (isClient === false) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="max-w-3xl mx-auto">
+              <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold mb-4">
+                  Post Your
+                  <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> Project</span>
+                </h1>
+                <p className="text-xl text-muted-foreground">
+                  Find the perfect creator for your project with AI-powered matching
+                </p>
+              </div>
+
+              <Card className="bg-card/50 border-border/50">
+                <CardContent className="py-16">
+                  <div className="text-center space-y-6">
+                    <LogIn className="h-16 w-16 mx-auto text-muted-foreground" />
+                    <div>
+                      <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
+                      <p className="text-muted-foreground mb-6">
+                        You need to be signed in as a client to post projects
+                      </p>
+                    </div>
+                    <Button 
+                      onClick={() => navigate('/auth')}
+                      size="lg"
+                      className="bg-primary hover:bg-primary/90"
+                    >
+                      <LogIn className="h-5 w-5 mr-2" />
+                      Sign In as Client
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
