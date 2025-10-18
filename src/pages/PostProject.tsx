@@ -7,12 +7,24 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Plus, X, MapPin, DollarSign, Clock, Users, LogIn } from 'lucide-react';
+import { Plus, X, MapPin, DollarSign, Clock, Users } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+
+interface Project {
+  id: string;
+  project_name: string;
+  location: string;
+  budget: string;
+  timeline: string;
+  freelancer_type: string;
+  description: string;
+  tags: string[];
+  created_at: string;
+}
 
 const PostProject = () => {
   const [projectName, setProjectName] = useState('');
@@ -26,11 +38,14 @@ const PostProject = () => {
   const [loading, setLoading] = useState(false);
   const [isClient, setIsClient] = useState<boolean | null>(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     checkUserRole();
+    loadAllProjects();
   }, []);
 
   const checkUserRole = async () => {
@@ -49,6 +64,19 @@ const PostProject = () => {
 
     setIsClient(roles?.some(r => r.role === 'client') || false);
     setCheckingAuth(false);
+  };
+
+  const loadAllProjects = async () => {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(6);
+
+    if (!error && data) {
+      setAllProjects(data);
+    }
+    setLoadingProjects(false);
   };
 
   const addTag = () => {
@@ -104,7 +132,17 @@ const PostProject = () => {
         description: 'Your project has been posted',
       });
       
-      navigate('/projects');
+      // Reset form
+      setProjectName('');
+      setLocation('');
+      setBudget('');
+      setTimeline('');
+      setFreelancerType('');
+      setDescription('');
+      setTags([]);
+      
+      // Reload projects
+      loadAllProjects();
     } catch (error) {
       console.error('Error posting project:', error);
       toast({
@@ -132,58 +170,13 @@ const PostProject = () => {
     );
   }
 
-  if (isClient === false) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <main className="pt-20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="max-w-3xl mx-auto">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold mb-4">
-                  Post Your
-                  <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> Project</span>
-                </h1>
-                <p className="text-xl text-muted-foreground">
-                  Find the perfect creator for your project with AI-powered matching
-                </p>
-              </div>
-
-              <Card className="bg-card/50 border-border/50">
-                <CardContent className="py-16">
-                  <div className="text-center space-y-6">
-                    <LogIn className="h-16 w-16 mx-auto text-muted-foreground" />
-                    <div>
-                      <h2 className="text-2xl font-bold mb-2">Sign In Required</h2>
-                      <p className="text-muted-foreground mb-6">
-                        You need to be signed in as a client to post projects
-                      </p>
-                    </div>
-                    <Button 
-                      onClick={() => navigate('/auth')}
-                      size="lg"
-                      className="bg-primary hover:bg-primary/90"
-                    >
-                      <LogIn className="h-5 w-5 mr-2" />
-                      Sign In as Client
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <main className="pt-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold mb-4">
                 Post Your
@@ -194,154 +187,244 @@ const PostProject = () => {
               </p>
             </div>
 
-            <Card className="bg-card/50 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center text-2xl">
-                  <Plus className="h-6 w-6 mr-2" />
-                  Project Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="project-name">Project Name *</Label>
-                    <Input
-                      id="project-name"
-                      value={projectName}
-                      onChange={(e) => setProjectName(e.target.value)}
-                      placeholder="e.g., Brand Identity Design"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="location" className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      Location
-                    </Label>
-                    <Input
-                      id="location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g., Mumbai, India or Remote"
-                    />
-                  </div>
-                </div>
+            {/* Sign In Button for non-clients */}
+            {isClient === false && (
+              <div className="mb-8 text-center">
+                <p className="text-muted-foreground mb-4">
+                  Sign in as a client to post your project
+                </p>
+                <Button 
+                  onClick={() => navigate('/role-selection')}
+                  size="lg"
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  Sign In
+                </Button>
+              </div>
+            )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Project Form - only for clients */}
+            {isClient === true && (
+              <Card className="bg-card/50 border-border/50 mb-12 max-w-3xl mx-auto">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-2xl">
+                    <Plus className="h-6 w-6 mr-2" />
+                    Project Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="project-name">Project Name *</Label>
+                      <Input
+                        id="project-name"
+                        value={projectName}
+                        onChange={(e) => setProjectName(e.target.value)}
+                        placeholder="e.g., Brand Identity Design"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="location" className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        Location
+                      </Label>
+                      <Input
+                        id="location"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        placeholder="e.g., Mumbai, India or Remote"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="budget" className="flex items-center">
+                        <DollarSign className="h-4 w-4 mr-1" />
+                        Budget Range *
+                      </Label>
+                      <Select value={budget} onValueChange={setBudget}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select budget range" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="under-5k">Under ₹5,000</SelectItem>
+                          <SelectItem value="5k-15k">₹5,000 - ₹15,000</SelectItem>
+                          <SelectItem value="15k-30k">₹15,000 - ₹30,000</SelectItem>
+                          <SelectItem value="30k-50k">₹30,000 - ₹50,000</SelectItem>
+                          <SelectItem value="50k-100k">₹50,000 - ₹1,00,000</SelectItem>
+                          <SelectItem value="above-100k">Above ₹1,00,000</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="timeline" className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        Timeline *
+                      </Label>
+                      <Select value={timeline} onValueChange={setTimeline}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select timeline" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="asap">ASAP (1-3 days)</SelectItem>
+                          <SelectItem value="1-week">Within 1 week</SelectItem>
+                          <SelectItem value="2-weeks">Within 2 weeks</SelectItem>
+                          <SelectItem value="1-month">Within 1 month</SelectItem>
+                          <SelectItem value="flexible">Flexible timeline</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
                   <div>
-                    <Label htmlFor="budget" className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-1" />
-                      Budget Range *
+                    <Label htmlFor="freelancer-type" className="flex items-center">
+                      <Users className="h-4 w-4 mr-1" />
+                      Type of Creator Needed *
                     </Label>
-                    <Select value={budget} onValueChange={setBudget}>
+                    <Select value={freelancerType} onValueChange={setFreelancerType}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select budget range" />
+                        <SelectValue placeholder="Select creator type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="under-5k">Under ₹5,000</SelectItem>
-                        <SelectItem value="5k-15k">₹5,000 - ₹15,000</SelectItem>
-                        <SelectItem value="15k-30k">₹15,000 - ₹30,000</SelectItem>
-                        <SelectItem value="30k-50k">₹30,000 - ₹50,000</SelectItem>
-                        <SelectItem value="50k-100k">₹50,000 - ₹1,00,000</SelectItem>
-                        <SelectItem value="above-100k">Above ₹1,00,000</SelectItem>
+                        <SelectItem value="brand-designer">Brand Designer</SelectItem>
+                        <SelectItem value="video-editor">Video Editor</SelectItem>
+                        <SelectItem value="filmmaker">Filmmaker</SelectItem>
+                        <SelectItem value="photographer">Photographer</SelectItem>
+                        <SelectItem value="graphic-designer">Graphic Designer</SelectItem>
+                        <SelectItem value="content-creator">Content Creator</SelectItem>
+                        <SelectItem value="ui-ux-designer">UI/UX Designer</SelectItem>
+                        <SelectItem value="motion-graphics">Motion Graphics Artist</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+
                   <div>
-                    <Label htmlFor="timeline" className="flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      Timeline *
-                    </Label>
-                    <Select value={timeline} onValueChange={setTimeline}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select timeline" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="asap">ASAP (1-3 days)</SelectItem>
-                        <SelectItem value="1-week">Within 1 week</SelectItem>
-                        <SelectItem value="2-weeks">Within 2 weeks</SelectItem>
-                        <SelectItem value="1-month">Within 1 month</SelectItem>
-                        <SelectItem value="flexible">Flexible timeline</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="freelancer-type" className="flex items-center">
-                    <Users className="h-4 w-4 mr-1" />
-                    Type of Creator Needed *
-                  </Label>
-                  <Select value={freelancerType} onValueChange={setFreelancerType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select creator type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="brand-designer">Brand Designer</SelectItem>
-                      <SelectItem value="video-editor">Video Editor</SelectItem>
-                      <SelectItem value="filmmaker">Filmmaker</SelectItem>
-                      <SelectItem value="photographer">Photographer</SelectItem>
-                      <SelectItem value="graphic-designer">Graphic Designer</SelectItem>
-                      <SelectItem value="content-creator">Content Creator</SelectItem>
-                      <SelectItem value="ui-ux-designer">UI/UX Designer</SelectItem>
-                      <SelectItem value="motion-graphics">Motion Graphics Artist</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="description">Project Description *</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe your project in detail. What do you need? What's your vision? Any specific requirements?"
-                    rows={6}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="tags">Tags for AI Matching</Label>
-                  <div className="flex gap-2 mb-3">
-                    <Input
-                      id="tags"
-                      value={currentTag}
-                      onChange={(e) => setCurrentTag(e.target.value)}
-                      placeholder="Add relevant tags (e.g., modern, minimalist, corporate)"
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                    <Label htmlFor="description">Project Description *</Label>
+                    <Textarea
+                      id="description"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Describe your project in detail. What do you need? What's your vision? Any specific requirements?"
+                      rows={6}
                     />
-                    <Button type="button" onClick={addTag} variant="outline">
-                      Add Tag
+                  </div>
+
+                  <div>
+                    <Label htmlFor="tags">Tags for AI Matching</Label>
+                    <div className="flex gap-2 mb-3">
+                      <Input
+                        id="tags"
+                        value={currentTag}
+                        onChange={(e) => setCurrentTag(e.target.value)}
+                        placeholder="Add relevant tags (e.g., modern, minimalist, corporate)"
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                      />
+                      <Button type="button" onClick={addTag} variant="outline">
+                        Add Tag
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {tag}
+                          <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Tags help our AI match you with the most suitable creators
+                    </p>
+                  </div>
+
+                  <div className="pt-6 border-t border-border">
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90" 
+                      size="lg"
+                      onClick={handleSubmit}
+                      disabled={loading}
+                    >
+                      <Plus className="h-5 w-5 mr-2" />
+                      {loading ? 'Posting...' : 'Post Project & Find Creators'}
                     </Button>
+                    <p className="text-center text-sm text-muted-foreground mt-4">
+                      By posting, you agree to our Terms of Service and Privacy Policy
+                    </p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {tags.map((tag, index) => (
-                      <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                        {tag}
-                        <X className="h-3 w-3 cursor-pointer" onClick={() => removeTag(tag)} />
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Tags help our AI match you with the most suitable creators
-                  </p>
-                </div>
+                </CardContent>
+              </Card>
+            )}
 
-                <div className="pt-6 border-t border-border">
-                  <Button 
-                    className="w-full bg-primary hover:bg-primary/90" 
-                    size="lg"
-                    onClick={handleSubmit}
-                    disabled={loading}
-                  >
-                    <Plus className="h-5 w-5 mr-2" />
-                    {loading ? 'Posting...' : 'Post Project & Find Creators'}
-                  </Button>
-                  <p className="text-center text-sm text-muted-foreground mt-4">
-                    By posting, you agree to our Terms of Service and Privacy Policy
-                  </p>
+            {/* All Projects Section */}
+            <div className="mt-16">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold mb-4">
+                  Browse Active
+                  <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> Projects</span>
+                </h2>
+                <p className="text-muted-foreground">
+                  Explore projects posted by clients looking for talented creators
+                </p>
+              </div>
+
+              {loadingProjects ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">Loading projects...</p>
                 </div>
-              </CardContent>
-            </Card>
+              ) : allProjects.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No projects available at the moment</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {allProjects.map((project) => (
+                    <Card key={project.id} className="bg-card/50 border-border/50 hover:border-primary/50 transition-all">
+                      <CardHeader>
+                        <CardTitle className="text-xl">{project.project_name}</CardTitle>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {project.location}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <p className="text-sm text-muted-foreground line-clamp-3">
+                          {project.description}
+                        </p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center text-sm">
+                            <DollarSign className="h-4 w-4 mr-1 text-primary" />
+                            <span className="font-medium">{project.budget}</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <Clock className="h-4 w-4 mr-1 text-primary" />
+                            <span>{project.timeline}</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <Users className="h-4 w-4 mr-1 text-primary" />
+                            <span>{project.freelancer_type}</span>
+                          </div>
+                        </div>
+
+                        {project.tags && project.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {project.tags.slice(0, 3).map((tag, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+
+                        <Button className="w-full" variant="outline">
+                          View Details
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
