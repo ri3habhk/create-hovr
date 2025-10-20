@@ -2,16 +2,20 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Users, User } from 'lucide-react';
+import { Users, User, Briefcase } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Navigation from '@/components/Navigation';
 import CreatorDashboard from '@/components/CreatorDashboard';
 import ClientDashboard from '@/components/ClientDashboard';
+import { useToast } from '@/hooks/use-toast';
 
 const DashboardSelector = () => {
   const [selectedDashboard, setSelectedDashboard] = useState<'creator' | 'client' | null>(null);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [showSelectionDialog, setShowSelectionDialog] = useState(false);
+  const [showRoleSetup, setShowRoleSetup] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadUserRoles();
@@ -29,14 +33,49 @@ const DashboardSelector = () => {
     const rolesList = roles?.map(r => r.role) || [];
     setUserRoles(rolesList);
 
-    // If user has both roles, show selection dialog
-    if (rolesList.includes('client') && rolesList.includes('creator')) {
+    // If user has no roles, show role setup
+    if (rolesList.length === 0) {
+      setShowRoleSetup(true);
+      setIsLoading(false);
+    } else if (rolesList.includes('client') && rolesList.includes('creator')) {
+      // If user has both roles, show selection dialog
       setShowSelectionDialog(true);
+      setIsLoading(false);
     } else if (rolesList.includes('client')) {
       setSelectedDashboard('client');
+      setIsLoading(false);
     } else if (rolesList.includes('creator')) {
       setSelectedDashboard('creator');
+      setIsLoading(false);
     }
+  };
+
+  const handleRoleSetup = async (role: 'creator' | 'client') => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('user_roles')
+      .insert({ user_id: user.id, role });
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to set up your role. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUserRoles([role]);
+    setSelectedDashboard(role);
+    setShowRoleSetup(false);
+    setIsLoading(false);
+    
+    toast({
+      title: "Success",
+      description: `Your ${role} dashboard is ready!`,
+    });
   };
 
   const handleDashboardSelection = (type: 'creator' | 'client') => {
@@ -46,10 +85,73 @@ const DashboardSelector = () => {
 
   const hasRole = (role: string) => userRoles.includes(role);
 
-  if (selectedDashboard === null) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
+  if (showRoleSetup) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Navigation />
+        
+        <main className="flex-1 pt-24 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              <h1 className="text-4xl font-bold mb-4">Welcome to Your Dashboard</h1>
+              <p className="text-muted-foreground text-lg">
+                First, let's set up your account. Are you a client or creator?
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <Card 
+                className="cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-primary"
+                onClick={() => handleRoleSetup('client')}
+              >
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Briefcase className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">I'm a Client</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Looking to hire talented creators for my projects
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-2 text-left">
+                    <li>• Post projects and requirements</li>
+                    <li>• Browse creator portfolios</li>
+                    <li>• Hire the best talent</li>
+                    <li>• Manage project timelines</li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-primary"
+                onClick={() => handleRoleSetup('creator')}
+              >
+                <CardContent className="p-8 text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2">I'm a Creator</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Ready to showcase my work and get hired
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-2 text-left">
+                    <li>• Create professional portfolio</li>
+                    <li>• Showcase your best work</li>
+                    <li>• Get discovered by clients</li>
+                    <li>• Earn from your skills</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </main>
       </div>
     );
   }
