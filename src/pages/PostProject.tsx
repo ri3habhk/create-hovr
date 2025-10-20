@@ -170,107 +170,61 @@ const PostProject = () => {
     );
   }
 
-  if (isClient === false) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <main className="pt-20 pb-20">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Hero Section */}
-            <div className="max-w-5xl mx-auto text-center py-20 space-y-8">
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+  return (
+    <div className="min-h-screen bg-background">
+      <Navigation />
+      <main className="pt-20 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hero/Features Section - Always shown */}
+          <div className="max-w-5xl mx-auto mb-12">
+            <div className="text-center py-12 space-y-6">
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight">
                 Find Top Creative Talent
                 <span className="block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
                   In Minutes, Not Days
                 </span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
                 Post your project and get matched with India's best designers, videographers, 
                 and content creators using our AI-powered platform
               </p>
-              
-              {/* CTA Button */}
-              <div className="pt-8">
-                <Button 
-                  onClick={() => navigate('/role-selection')}
-                  size="lg"
-                  className="text-lg px-10 py-7 bg-primary hover:bg-primary/90"
-                >
-                  Get Started - It's Free
-                </Button>
-                <p className="text-sm text-muted-foreground mt-4">
-                  Join 1,000+ businesses finding creative talent
-                </p>
-              </div>
             </div>
 
             {/* Features Grid */}
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 py-16">
-              <Card className="bg-card/50 border-border/50 text-center p-8">
-                <div className="flex justify-center mb-4">
-                  <Users className="h-12 w-12 text-primary" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-card/50 border-border/50 text-center p-6">
+                <div className="flex justify-center mb-3">
+                  <Users className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">AI-Powered Matching</h3>
-                <p className="text-muted-foreground">
-                  Our smart algorithm finds the perfect creator for your project in seconds
+                <h3 className="text-lg font-bold mb-2">AI-Powered Matching</h3>
+                <p className="text-sm text-muted-foreground">
+                  Smart algorithm finds perfect creators for your project
                 </p>
               </Card>
               
-              <Card className="bg-card/50 border-border/50 text-center p-8">
-                <div className="flex justify-center mb-4">
-                  <Clock className="h-12 w-12 text-primary" />
+              <Card className="bg-card/50 border-border/50 text-center p-6">
+                <div className="flex justify-center mb-3">
+                  <Clock className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Save Time & Money</h3>
-                <p className="text-muted-foreground">
-                  No more endless browsing. Get matched with pre-vetted professionals
+                <h3 className="text-lg font-bold mb-2">Save Time & Money</h3>
+                <p className="text-sm text-muted-foreground">
+                  Get matched with pre-vetted professionals instantly
                 </p>
               </Card>
               
-              <Card className="bg-card/50 border-border/50 text-center p-8">
-                <div className="flex justify-center mb-4">
-                  <DollarSign className="h-12 w-12 text-primary" />
+              <Card className="bg-card/50 border-border/50 text-center p-6">
+                <div className="flex justify-center mb-3">
+                  <DollarSign className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-3">Transparent Pricing</h3>
-                <p className="text-muted-foreground">
-                  Clear budgets, no hidden fees. Only pay when you find the right match
+                <h3 className="text-lg font-bold mb-2">Transparent Pricing</h3>
+                <p className="text-sm text-muted-foreground">
+                  Clear budgets, no hidden fees, fair pricing
                 </p>
               </Card>
-            </div>
-
-            {/* Social Proof */}
-            <div className="max-w-4xl mx-auto text-center py-12">
-              <p className="text-muted-foreground mb-6">Trusted by leading brands</p>
-              <div className="flex flex-wrap justify-center gap-8 items-center opacity-60">
-                <Badge variant="outline" className="text-lg px-6 py-2">TechCorp</Badge>
-                <Badge variant="outline" className="text-lg px-6 py-2">DesignCo</Badge>
-                <Badge variant="outline" className="text-lg px-6 py-2">StartupXYZ</Badge>
-                <Badge variant="outline" className="text-lg px-6 py-2">MediaHub</Badge>
-              </div>
             </div>
           </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="pt-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold mb-4">
-                Post Your
-                <span className="bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> Project</span>
-              </h1>
-              <p className="text-xl text-muted-foreground">
-                Find the perfect creator for your project with AI-powered matching
-              </p>
-            </div>
-
             {/* Project Form - only for clients */}
             {isClient === true && (
               <Card className="bg-card/50 border-border/50 mb-12 max-w-3xl mx-auto">
@@ -419,6 +373,25 @@ const PostProject = () => {
                       By posting, you agree to our Terms of Service and Privacy Policy
                     </p>
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Not a client message */}
+            {isClient === false && (
+              <Card className="bg-card/50 border-border/50 mb-12 max-w-3xl mx-auto">
+                <CardContent className="py-12 text-center">
+                  <h3 className="text-2xl font-bold mb-4">Ready to Post a Project?</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Sign in as a client to post projects and connect with talented creators
+                  </p>
+                  <Button 
+                    onClick={() => navigate('/role-selection')}
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    Get Started - It's Free
+                  </Button>
                 </CardContent>
               </Card>
             )}

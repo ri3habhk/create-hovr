@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Users, User } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import Navigation from '@/components/Navigation';
@@ -8,8 +9,9 @@ import CreatorDashboard from '@/components/CreatorDashboard';
 import ClientDashboard from '@/components/ClientDashboard';
 
 const DashboardSelector = () => {
-  const [selectedDashboard, setSelectedDashboard] = useState<'creator' | 'client'>('creator');
+  const [selectedDashboard, setSelectedDashboard] = useState<'creator' | 'client' | null>(null);
   const [userRoles, setUserRoles] = useState<string[]>([]);
+  const [showSelectionDialog, setShowSelectionDialog] = useState(false);
 
   useEffect(() => {
     loadUserRoles();
@@ -27,18 +29,70 @@ const DashboardSelector = () => {
     const rolesList = roles?.map(r => r.role) || [];
     setUserRoles(rolesList);
 
-    if (rolesList.includes('client') && !rolesList.includes('creator')) {
+    // If user has both roles, show selection dialog
+    if (rolesList.includes('client') && rolesList.includes('creator')) {
+      setShowSelectionDialog(true);
+    } else if (rolesList.includes('client')) {
       setSelectedDashboard('client');
     } else if (rolesList.includes('creator')) {
       setSelectedDashboard('creator');
     }
   };
 
+  const handleDashboardSelection = (type: 'creator' | 'client') => {
+    setSelectedDashboard(type);
+    setShowSelectionDialog(false);
+  };
+
   const hasRole = (role: string) => userRoles.includes(role);
+
+  if (selectedDashboard === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+
+      {/* Dashboard Selection Dialog */}
+      <Dialog open={showSelectionDialog} onOpenChange={setShowSelectionDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-center">Choose Your Dashboard</DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              You have access to both client and creator features. Which dashboard would you like to view?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-6">
+            <Button
+              onClick={() => handleDashboardSelection('creator')}
+              className="h-32 flex flex-col items-center justify-center space-y-3 bg-card border-2 border-border hover:border-foreground hover:bg-card/80"
+              variant="outline"
+            >
+              <User className="h-10 w-10 text-foreground" />
+              <div className="text-center">
+                <div className="font-semibold text-foreground">Creator</div>
+                <div className="text-xs text-muted-foreground">Manage portfolio</div>
+              </div>
+            </Button>
+            <Button
+              onClick={() => handleDashboardSelection('client')}
+              className="h-32 flex flex-col items-center justify-center space-y-3 bg-card border-2 border-border hover:border-foreground hover:bg-card/80"
+              variant="outline"
+            >
+              <Users className="h-10 w-10 text-foreground" />
+              <div className="text-center">
+                <div className="font-semibold text-foreground">Client</div>
+                <div className="text-xs text-muted-foreground">Post projects</div>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       
       {/* Dashboard Type Selector - Only show if user has both roles */}
       {hasRole('creator') && hasRole('client') && (
