@@ -1,39 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Bell, Settings, Upload, Eye, MessageSquare, TrendingUp, DollarSign, Clock, CheckCircle } from 'lucide-react';
+import { Bell, Settings, Upload, Eye, MessageSquare, DollarSign } from 'lucide-react';
 
 const CreatorDashboard = () => {
-  const [hoveredActivity, setHoveredActivity] = useState<number | null>(null);
-  const [earningsView, setEarningsView] = useState<'weekly' | 'monthly'>('monthly');
+  const [portfolios, setPortfolios] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const stats = {
-    profileViews: 1240,
-    pendingProjects: 3,
-    unreadMessages: 7,
-    totalEarnings: 125000,
-    weeklyEarnings: 8500,
-    monthlyEarnings: 32000,
-    pendingEarnings: 45000,
-    activeProjects: 4
+  useEffect(() => {
+    loadPortfolios();
+  }, []);
+
+  const loadPortfolios = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('creator_portfolios')
+      .select('*')
+      .eq('user_id', user.id);
+
+    if (!error && data) {
+      setPortfolios(data);
+    }
+    setLoading(false);
   };
 
-  const activities = [
-    { label: 'Profile Views', value: 85, count: 1054, color: 'bg-blue-500' },
-    { label: 'Project Responses', value: 60, count: 72, color: 'bg-green-500' },
-    { label: 'Message Replies', value: 95, count: 114, color: 'bg-purple-500' },
-    { label: 'Portfolio Updates', value: 40, count: 12, color: 'bg-orange-500' }
-  ];
-
-  const tips = [
-    "Complete your portfolio to get 3x more views",
-    "Respond to messages within 24 hours for better ranking",
-    "Upload new work samples weekly to stay relevant"
-  ];
+  const stats = {
+    profileViews: 0,
+    pendingProjects: 0,
+    totalEarnings: 0
+  };
 
   return (
     <main className="py-8">
@@ -94,20 +94,8 @@ const CreatorDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Tabs value={earningsView} onValueChange={(value) => setEarningsView(value as 'weekly' | 'monthly')} className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 mb-3">
-                    <TabsTrigger value="weekly">Weekly</TabsTrigger>
-                    <TabsTrigger value="monthly">Monthly</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="weekly">
-                    <p className="text-3xl font-bold text-foreground">₹{stats.weeklyEarnings.toLocaleString()}</p>
-                    <p className="text-sm text-muted-foreground">This week</p>
-                  </TabsContent>
-                  <TabsContent value="monthly">
-                    <p className="text-3xl font-bold text-foreground">₹{stats.monthlyEarnings.toLocaleString()}</p>
-                    <p className="text-sm text-muted-foreground">This month</p>
-                  </TabsContent>
-                </Tabs>
+                <p className="text-4xl font-bold text-foreground">₹{stats.totalEarnings.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">Total earned</p>
               </CardContent>
             </Card>
           </div>
@@ -116,66 +104,49 @@ const CreatorDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Activity Analytics */}
+              {/* Portfolio Status */}
               <Card className="bg-card/50 border-border/50">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-foreground">
-                    <TrendingUp className="h-5 w-5 mr-2" />
-                    Activity Overview
-                  </CardTitle>
+                  <CardTitle className="text-foreground">Your Portfolio</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {activities.map((activity, index) => (
-                      <div key={index} className="space-y-2 relative">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">{activity.label}</span>
-                          <span className="text-sm font-medium text-foreground">{activity.value}%</span>
-                        </div>
-                        <div 
-                          className="w-full bg-border/50 rounded-full h-2 relative cursor-pointer"
-                          onMouseEnter={() => setHoveredActivity(index)}
-                          onMouseLeave={() => setHoveredActivity(null)}
-                        >
-                          <div 
-                            className={`h-2 rounded-full ${activity.color} transition-all duration-200 hover:opacity-80`}
-                            style={{ width: `${activity.value}%` }}
-                          />
-                          {hoveredActivity === index && (
-                            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg">
-                              {activity.value}% ({activity.count} total)
-                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-foreground"></div>
+                  {loading ? (
+                    <p className="text-muted-foreground text-center py-4">Loading portfolio...</p>
+                  ) : portfolios.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground mb-4">No portfolio created yet</p>
+                      <Button 
+                        onClick={() => navigate('/portfolio-setup')}
+                        variant="outline"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Create Your Portfolio
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {portfolios.map((portfolio) => (
+                        <div key={portfolio.id} className="p-4 bg-background/50 rounded-lg">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium text-foreground">{portfolio.title}</h4>
+                              <p className="text-sm text-muted-foreground mt-1">{portfolio.bio?.substring(0, 100)}...</p>
+                              <div className="flex gap-2 mt-2">
+                                {portfolio.skills?.slice(0, 3).map((skill: string, index: number) => (
+                                  <span key={index} className="text-xs bg-background px-2 py-1 rounded">
+                                    {skill}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                          )}
+                            <span className={`text-xs px-2 py-1 rounded ${portfolio.is_published ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
+                              {portfolio.is_published ? 'Published' : 'Draft'}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Active Projects */}
-              <Card className="bg-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-foreground">Active Projects</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-4 bg-background/50 rounded-lg">
-                      <div>
-                        <h4 className="font-medium text-foreground">E-commerce Brand Identity</h4>
-                        <p className="text-sm text-muted-foreground">TechMart Solutions</p>
-                      </div>
-                      <Badge className="bg-foreground text-background">In Progress</Badge>
+                      ))}
                     </div>
-                    <div className="flex justify-between items-center p-4 bg-background/50 rounded-lg">
-                      <div>
-                        <h4 className="font-medium text-foreground">Mobile App UI Design</h4>
-                        <p className="text-sm text-muted-foreground">StartupXYZ</p>
-                      </div>
-                      <Badge variant="outline" className="border-orange-500 text-orange-500">Review</Badge>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -198,19 +169,29 @@ const CreatorDashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Growth Tips */}
+              {/* Recent Activity */}
               <Card className="bg-card/50 border-border/50">
                 <CardHeader>
-                  <CardTitle className="text-foreground">Growth Tips</CardTitle>
+                  <CardTitle className="text-foreground">Recent Activity</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {tips.map((tip, index) => (
-                      <div key={index} className="text-sm text-muted-foreground p-3 bg-background/50 rounded-lg">
-                        {tip}
+                  {portfolios.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Create your portfolio to start getting noticed by clients
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="text-sm text-muted-foreground p-3 bg-background/50 rounded-lg">
+                        Portfolio created: <span className="text-foreground font-medium">{portfolios[0]?.title}</span>
+                        <p className="text-xs mt-1">{new Date(portfolios[0]?.created_at).toLocaleDateString()}</p>
                       </div>
-                    ))}
-                  </div>
+                      {portfolios[0]?.is_published && (
+                        <div className="text-sm text-muted-foreground p-3 bg-background/50 rounded-lg">
+                          ✓ Portfolio is live and visible to clients
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

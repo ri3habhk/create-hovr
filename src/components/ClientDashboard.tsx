@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, TrendingUp } from 'lucide-react';
+import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, Eye, DollarSign } from 'lucide-react';
 
 interface Project {
   id: string;
@@ -16,7 +16,6 @@ interface Project {
 }
 
 const ClientDashboard = () => {
-  const [hoveredActivity, setHoveredActivity] = useState<number | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -42,24 +41,11 @@ const ClientDashboard = () => {
   };
 
   const stats = {
-    briefsPosted: projects.length,
-    responses: 0,
+    profileViews: 0,
+    pendingProjects: projects.length,
     savedCreators: 0,
-    activeProjects: projects.length
+    moneySpent: 0
   };
-
-  const activities = [
-    { label: 'Brief Responses', value: 75, count: 156, color: 'bg-blue-500' },
-    { label: 'Creator Views', value: 90, count: 234, color: 'bg-green-500' },
-    { label: 'Messages Sent', value: 65, count: 89, color: 'bg-purple-500' },
-    { label: 'Projects Completed', value: 85, count: 28, color: 'bg-orange-500' }
-  ];
-
-  const recommendedCreators = [
-    { name: 'Sarah Chen', specialty: 'UI/UX Design', rating: 4.9 },
-    { name: 'Marcus Johnson', specialty: 'Brand Identity', rating: 4.8 },
-    { name: 'Priya Sharma', specialty: 'Social Media', rating: 4.9 }
-  ];
 
   return (
     <main className="py-8">
@@ -96,12 +82,12 @@ const ClientDashboard = () => {
             <Card className="bg-card/50 border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center text-foreground">
-                  <FileText className="h-5 w-5 mr-2" />
-                  Briefs Posted
+                  <Eye className="h-5 w-5 mr-2" />
+                  Profile Views
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-foreground">{stats.briefsPosted}</p>
+                <p className="text-3xl font-bold text-foreground">{stats.profileViews}</p>
                 <p className="text-sm text-muted-foreground">This month</p>
               </CardContent>
             </Card>
@@ -109,13 +95,13 @@ const ClientDashboard = () => {
             <Card className="bg-card/50 border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center text-foreground">
-                  <Users className="h-5 w-5 mr-2" />
-                  Responses
+                  <FileText className="h-5 w-5 mr-2" />
+                  Pending Projects
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-foreground">{stats.responses}</p>
-                <p className="text-sm text-muted-foreground">From creators</p>
+                <p className="text-3xl font-bold text-foreground">{stats.pendingProjects}</p>
+                <p className="text-sm text-muted-foreground">Awaiting creators</p>
               </CardContent>
             </Card>
 
@@ -135,13 +121,13 @@ const ClientDashboard = () => {
             <Card className="bg-card/50 border-border/50">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center text-foreground">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Active Projects
+                  <DollarSign className="h-5 w-5 mr-2" />
+                  Total Spent
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-foreground">{stats.activeProjects}</p>
-                <p className="text-sm text-muted-foreground">In progress</p>
+                <p className="text-4xl font-bold text-foreground">₹{stats.moneySpent.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">All time</p>
               </CardContent>
             </Card>
           </div>
@@ -150,45 +136,7 @@ const ClientDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Activity Analytics */}
-              <Card className="bg-card/50 border-border/50">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-foreground">
-                    <TrendingUp className="h-5 w-5 mr-2" />
-                    Project Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {activities.map((activity, index) => (
-                      <div key={index} className="space-y-2 relative">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">{activity.label}</span>
-                          <span className="text-sm font-medium text-foreground">{activity.value}%</span>
-                        </div>
-                        <div 
-                          className="w-full bg-border/50 rounded-full h-2 relative cursor-pointer"
-                          onMouseEnter={() => setHoveredActivity(index)}
-                          onMouseLeave={() => setHoveredActivity(null)}
-                        >
-                          <div 
-                            className={`h-2 rounded-full ${activity.color} transition-all duration-200 hover:opacity-80`}
-                            style={{ width: `${activity.value}%` }}
-                          />
-                          {hoveredActivity === index && (
-                            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-3 py-2 rounded-lg text-xs whitespace-nowrap z-10 shadow-lg">
-                              {activity.value}% ({activity.count} total)
-                              <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-foreground"></div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Active Briefs */}
+              {/* Active Projects */}
               <Card className="bg-card/50 border-border/50">
                 <CardHeader>
                   <CardTitle className="text-foreground">Your Projects</CardTitle>
@@ -255,22 +203,25 @@ const ClientDashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Recommended Creators */}
+              {/* Account Activity */}
               <Card className="bg-card/50 border-border/50">
                 <CardHeader>
-                  <CardTitle className="text-foreground">Recommended Creators</CardTitle>
+                  <CardTitle className="text-foreground">Recent Activity</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {recommendedCreators.map((creator, index) => (
-                      <div key={index} className="p-3 bg-background/50 rounded-lg">
-                        <h4 className="font-medium text-foreground">{creator.name}</h4>
-                        <p className="text-sm text-muted-foreground">{creator.specialty}</p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-foreground">★ {creator.rating}</span>
+                    {projects.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        No activity yet. Post your first project to get started!
+                      </p>
+                    ) : (
+                      projects.slice(0, 3).map((project) => (
+                        <div key={project.id} className="text-sm text-muted-foreground p-3 bg-background/50 rounded-lg">
+                          Posted project: <span className="text-foreground font-medium">{project.project_name}</span>
+                          <p className="text-xs mt-1">{new Date(project.created_at).toLocaleDateString()}</p>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </CardContent>
               </Card>

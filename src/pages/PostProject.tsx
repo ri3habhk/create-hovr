@@ -170,6 +170,90 @@ const PostProject = () => {
     );
   }
 
+  if (isClient === false) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <main className="pt-20 pb-20">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            {/* Hero Section */}
+            <div className="max-w-5xl mx-auto text-center py-20 space-y-8">
+              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+                Find Top Creative Talent
+                <span className="block bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent">
+                  In Minutes, Not Days
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+                Post your project and get matched with India's best designers, videographers, 
+                and content creators using our AI-powered platform
+              </p>
+              
+              {/* CTA Button */}
+              <div className="pt-8">
+                <Button 
+                  onClick={() => navigate('/role-selection')}
+                  size="lg"
+                  className="text-lg px-10 py-7 bg-primary hover:bg-primary/90"
+                >
+                  Get Started - It's Free
+                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Join 1,000+ businesses finding creative talent
+                </p>
+              </div>
+            </div>
+
+            {/* Features Grid */}
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 py-16">
+              <Card className="bg-card/50 border-border/50 text-center p-8">
+                <div className="flex justify-center mb-4">
+                  <Users className="h-12 w-12 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">AI-Powered Matching</h3>
+                <p className="text-muted-foreground">
+                  Our smart algorithm finds the perfect creator for your project in seconds
+                </p>
+              </Card>
+              
+              <Card className="bg-card/50 border-border/50 text-center p-8">
+                <div className="flex justify-center mb-4">
+                  <Clock className="h-12 w-12 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Save Time & Money</h3>
+                <p className="text-muted-foreground">
+                  No more endless browsing. Get matched with pre-vetted professionals
+                </p>
+              </Card>
+              
+              <Card className="bg-card/50 border-border/50 text-center p-8">
+                <div className="flex justify-center mb-4">
+                  <DollarSign className="h-12 w-12 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Transparent Pricing</h3>
+                <p className="text-muted-foreground">
+                  Clear budgets, no hidden fees. Only pay when you find the right match
+                </p>
+              </Card>
+            </div>
+
+            {/* Social Proof */}
+            <div className="max-w-4xl mx-auto text-center py-12">
+              <p className="text-muted-foreground mb-6">Trusted by leading brands</p>
+              <div className="flex flex-wrap justify-center gap-8 items-center opacity-60">
+                <Badge variant="outline" className="text-lg px-6 py-2">TechCorp</Badge>
+                <Badge variant="outline" className="text-lg px-6 py-2">DesignCo</Badge>
+                <Badge variant="outline" className="text-lg px-6 py-2">StartupXYZ</Badge>
+                <Badge variant="outline" className="text-lg px-6 py-2">MediaHub</Badge>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -186,22 +270,6 @@ const PostProject = () => {
                 Find the perfect creator for your project with AI-powered matching
               </p>
             </div>
-
-            {/* Sign In Button for non-clients */}
-            {isClient === false && (
-              <div className="mb-8 text-center">
-                <p className="text-muted-foreground mb-4">
-                  Sign in as a client to post your project
-                </p>
-                <Button 
-                  onClick={() => navigate('/role-selection')}
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  Sign In
-                </Button>
-              </div>
-            )}
 
             {/* Project Form - only for clients */}
             {isClient === true && (
