@@ -173,8 +173,8 @@ const Settings = () => {
                     <div className="flex items-center gap-4">
                       <Avatar className="h-20 w-20">
                         <AvatarImage src={profile.avatar_url} />
-                        <AvatarFallback>
-                          {profile.full_name?.charAt(0) || 'U'}
+                        <AvatarFallback className="bg-primary/10 text-primary text-2xl font-semibold">
+                          {profile.first_name?.charAt(0)?.toUpperCase()}{profile.last_name?.charAt(0)?.toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <Button variant="outline" size="sm">
@@ -183,13 +183,23 @@ const Settings = () => {
                       </Button>
                     </div>
 
-                    <div>
-                      <Label htmlFor="fullName">Full Name</Label>
-                      <Input
-                        id="fullName"
-                        value={profile.full_name || ''}
-                        onChange={(e) => setProfile({...profile, full_name: e.target.value})}
-                      />
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          value={profile.first_name || ''}
+                          onChange={(e) => setProfile({...profile, first_name: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          value={profile.last_name || ''}
+                          onChange={(e) => setProfile({...profile, last_name: e.target.value})}
+                        />
+                      </div>
                     </div>
 
                     <div>
@@ -296,6 +306,48 @@ const Settings = () => {
                       <p className="text-sm text-muted-foreground capitalize">
                         {userRole} Account
                       </p>
+                    </div>
+
+                    <div className="pt-4 border-t">
+                      <h3 className="font-medium mb-4">Preferences</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Email Notifications</p>
+                            <p className="text-sm text-muted-foreground">
+                              Receive email updates about your projects
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">Configure</Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Privacy Settings</p>
+                            <p className="text-sm text-muted-foreground">
+                              Control who can see your profile
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">Manage</Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Language</p>
+                            <p className="text-sm text-muted-foreground">
+                              Choose your preferred language
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">English</Button>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Theme</p>
+                            <p className="text-sm text-muted-foreground">
+                              Switch between light and dark mode
+                            </p>
+                          </div>
+                          <Button variant="outline" size="sm">System Default</Button>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="pt-4 border-t">

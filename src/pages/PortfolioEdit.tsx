@@ -228,7 +228,8 @@ const PortfolioEdit = () => {
         .from('profiles')
         .upsert({
           id: user.id,
-          full_name: `${validData.firstName} ${validData.lastName}`
+          first_name: validData.firstName,
+          last_name: validData.lastName
         });
 
       const { error } = await supabase

@@ -56,7 +56,7 @@ const CreatorsBrowse = () => {
       // Fetch profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, full_name, avatar_url')
+        .select('id, first_name, last_name, avatar_url')
         .in('id', userIds);
 
       if (profilesError) throw profilesError;

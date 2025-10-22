@@ -104,7 +104,8 @@ const ClientDashboard = () => {
           ),
           profiles:creator_id (
             id,
-            full_name,
+            first_name,
+            last_name,
             avatar_url
           )
         `)
@@ -357,7 +358,9 @@ const ClientDashboard = () => {
                         <div key={claim.id} className="p-4 bg-background/50 rounded-lg border border-border/50">
                           <div className="flex justify-between items-start mb-2">
                             <div>
-                              <h4 className="font-medium text-foreground">{claim.profiles?.full_name || 'Unknown Creator'}</h4>
+                              <h4 className="font-medium text-foreground">
+                                {claim.profiles?.first_name} {claim.profiles?.last_name || 'Unknown Creator'}
+                              </h4>
                               <p className="text-sm text-muted-foreground">{claim.projects?.project_name}</p>
                             </div>
                             <span className={`text-xs px-2 py-1 rounded ${
