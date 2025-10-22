@@ -16,14 +16,21 @@ export type Database = {
     Tables: {
       creator_portfolios: {
         Row: {
+          alias_name: string | null
           bio: string | null
+          budget_max: number | null
+          budget_min: number | null
           categories: string[] | null
           created_at: string | null
           experience_years: number | null
+          first_name: string | null
           hourly_rate: number | null
           id: string
           is_published: boolean | null
+          last_name: string | null
           location: string | null
+          major_occupation: string | null
+          minor_occupation: string | null
           portfolio_files: string[] | null
           skills: string[] | null
           title: string
@@ -31,14 +38,21 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          alias_name?: string | null
           bio?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
           categories?: string[] | null
           created_at?: string | null
           experience_years?: number | null
+          first_name?: string | null
           hourly_rate?: number | null
           id?: string
           is_published?: boolean | null
+          last_name?: string | null
           location?: string | null
+          major_occupation?: string | null
+          minor_occupation?: string | null
           portfolio_files?: string[] | null
           skills?: string[] | null
           title: string
@@ -46,14 +60,21 @@ export type Database = {
           user_id: string
         }
         Update: {
+          alias_name?: string | null
           bio?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
           categories?: string[] | null
           created_at?: string | null
           experience_years?: number | null
+          first_name?: string | null
           hourly_rate?: number | null
           id?: string
           is_published?: boolean | null
+          last_name?: string | null
           location?: string | null
+          major_occupation?: string | null
+          minor_occupation?: string | null
           portfolio_files?: string[] | null
           skills?: string[] | null
           title?: string
@@ -61,6 +82,51 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      creator_ratings: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          creator_id: string
+          id: string
+          rating: number
+          review_text: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          rating: number
+          review_text?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          rating?: number
+          review_text?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_ratings_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_ratings_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

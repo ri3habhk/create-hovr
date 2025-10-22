@@ -32,45 +32,64 @@ export const projectSchema = z.object({
 
 // Portfolio validation schema
 export const portfolioSchema = z.object({
-  title: z.string()
+  firstName: z.string()
     .trim()
-    .min(3, 'Title must be at least 3 characters')
-    .max(100, 'Title must be less than 100 characters'),
+    .min(1, 'First name is required')
+    .max(50, 'First name must be less than 50 characters'),
   
-  bio: z.string()
+  lastName: z.string()
     .trim()
-    .max(2000, 'Bio must be less than 2000 characters')
+    .min(1, 'Last name is required')
+    .max(50, 'Last name must be less than 50 characters'),
+  
+  aliasName: z.string()
+    .trim()
+    .max(100, 'Alias name must be less than 100 characters')
+    .optional(),
+  
+  majorOccupation: z.string()
+    .trim()
+    .min(1, 'Major occupation is required'),
+  
+  minorOccupation: z.string()
+    .trim()
     .optional(),
   
   location: z.string()
     .trim()
-    .max(100, 'Location must be less than 100 characters')
-    .optional(),
+    .min(1, 'Location is required')
+    .max(100, 'Location must be less than 100 characters'),
   
-  hourlyRate: z.string()
-    .optional()
+  budgetMin: z.string()
+    .min(1, 'Minimum budget is required')
     .refine(
-      val => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 10000),
-      'Hourly rate must be between 0 and 10000'
+      val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0,
+      'Minimum budget must be a valid positive number'
     ),
   
-  experience: z.string()
-    .optional()
+  budgetMax: z.string()
+    .min(1, 'Maximum budget is required')
     .refine(
-      val => !val || (!isNaN(parseInt(val)) && parseInt(val) >= 0 && parseInt(val) <= 80),
-      'Experience must be between 0 and 80 years'
+      val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0,
+      'Maximum budget must be a valid positive number'
     ),
+  
+  bio: z.string()
+    .trim()
+    .min(10, 'Bio must be at least 10 characters')
+    .max(1500, 'Bio must be less than 250 words (approximately 1500 characters)'),
   
   skills: z.string()
-    .transform(val => val.split(',').map(s => s.trim()).filter(s => s.length > 0))
-    .refine(arr => arr.length <= 20, 'Maximum 20 skills allowed')
-    .refine(arr => arr.every(s => s.length <= 50), 'Each skill must be under 50 characters'),
-  
-  categories: z.string()
-    .transform(val => val.split(',').map(s => s.trim()).filter(s => s.length > 0))
-    .refine(arr => arr.length <= 10, 'Maximum 10 categories allowed')
-    .refine(arr => arr.every(s => s.length <= 50), 'Each category must be under 50 characters')
-});
+    .trim()
+    .min(1, 'At least one skill is required')
+    .max(500, 'Skills list is too long')
+}).refine(
+  data => parseFloat(data.budgetMax) >= parseFloat(data.budgetMin),
+  {
+    message: 'Maximum budget must be greater than or equal to minimum budget',
+    path: ['budgetMax']
+  }
+);
 
 // Auth validation schemas
 export const signUpSchema = z.object({
