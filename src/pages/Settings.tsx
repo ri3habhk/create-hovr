@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Upload, LogOut } from 'lucide-react';
 import Navigation from '@/components/Navigation';
+import logError from '@/lib/errorLogger';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const Settings = () => {
         setPortfolio(portfolioData);
       }
     } catch (error: any) {
-      console.error('Error loading user data:', error);
+      logError('LoadUserData', error);
     }
   };
 
@@ -85,9 +86,10 @@ const Settings = () => {
 
       await loadUserData();
     } catch (error: any) {
+      logError('UpdateProfile', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to update profile. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -115,9 +117,10 @@ const Settings = () => {
 
       await loadUserData();
     } catch (error: any) {
+      logError('UpdatePortfolio', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to update portfolio. Please try again.',
         variant: 'destructive',
       });
     } finally {

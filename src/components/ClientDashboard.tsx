@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, Eye, DollarSign } from 'lucide-react';
+import logError from '@/lib/errorLogger';
 
 interface Project {
   id: string;
@@ -25,19 +26,26 @@ const ClientDashboard = () => {
   }, []);
 
   const loadProjects = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      setProjects(data);
+      if (error) throw error;
+
+      if (data) {
+        setProjects(data);
+      }
+    } catch (error) {
+      logError('ClientDashboard', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const stats = {

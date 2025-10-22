@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Phone } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import logError from '@/lib/errorLogger';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -71,9 +72,10 @@ const Auth = () => {
 
       if (error) throw error;
     } catch (error: any) {
+      logError('GoogleLogin', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to sign in with Google. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -127,9 +129,10 @@ const Auth = () => {
         }
       }
     } catch (error: any) {
+      logError('SignUp', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: error.message || 'Failed to create account. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -174,9 +177,10 @@ const Auth = () => {
         }
       }
     } catch (error: any) {
+      logError('SignIn', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to sign in. Please check your credentials and try again.',
         variant: 'destructive',
       });
     } finally {

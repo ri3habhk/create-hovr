@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bell, Settings, Upload, Eye, MessageSquare, DollarSign } from 'lucide-react';
+import logError from '@/lib/errorLogger';
 
 const CreatorDashboard = () => {
   const [portfolios, setPortfolios] = useState<any[]>([]);
@@ -15,18 +16,25 @@ const CreatorDashboard = () => {
   }, []);
 
   const loadPortfolios = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data, error } = await supabase
-      .from('creator_portfolios')
-      .select('*')
-      .eq('user_id', user.id);
+      const { data, error } = await supabase
+        .from('creator_portfolios')
+        .select('*')
+        .eq('user_id', user.id);
 
-    if (!error && data) {
-      setPortfolios(data);
+      if (error) throw error;
+
+      if (data) {
+        setPortfolios(data);
+      }
+    } catch (error) {
+      logError('CreatorDashboard', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const stats = {

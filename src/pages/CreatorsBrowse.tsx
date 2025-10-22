@@ -8,6 +8,7 @@ import { Star, MapPin, Folder, Search, Filter } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
+import logError from '@/lib/errorLogger';
 
 const CreatorsBrowse = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,7 +37,7 @@ const CreatorsBrowse = () => {
 
       setCreators(data || []);
     } catch (error) {
-      console.error('Error loading creators:', error);
+      logError('CreatorsBrowse', error);
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import Navigation from '@/components/Navigation';
+import { portfolioSchema, validateFile } from '@/lib/validation';
+import logError from '@/lib/errorLogger';
 
 const PortfolioSetup = () => {
   const navigate = useNavigate();
@@ -37,9 +39,25 @@ const PortfolioSetup = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+    if (!e.target.files) return;
+    
+    const selectedFiles = Array.from(e.target.files);
+    const validFiles: File[] = [];
+    
+    for (const file of selectedFiles) {
+      const validation = validateFile(file);
+      if (!validation.valid) {
+        toast({
+          title: 'Invalid file',
+          description: validation.error,
+          variant: 'destructive',
+        });
+        continue;
+      }
+      validFiles.push(file);
     }
+    
+    setFiles(prev => [...prev, ...validFiles]);
   };
 
   const removeFile = (index: number) => {
@@ -71,6 +89,21 @@ const PortfolioSetup = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate inputs using zod schema
+    const validationResult = portfolioSchema.safeParse(formData);
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.flatten().fieldErrors;
+      const firstError = Object.values(errors).flat()[0];
+      toast({
+        title: 'Validation Error',
+        description: firstError,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -80,18 +113,21 @@ const PortfolioSetup = () => {
       // Upload files first
       const portfolioFiles = files.length > 0 ? await uploadFiles(user.id) : [];
 
+      // Use validated data
+      const validData = validationResult.data;
+
       // Create portfolio
       const { error } = await supabase
         .from('creator_portfolios')
         .insert({
           user_id: user.id,
-          title: formData.title,
-          bio: formData.bio,
-          skills: formData.skills.split(',').map(s => s.trim()),
-          hourly_rate: formData.hourlyRate ? parseFloat(formData.hourlyRate) : null,
-          location: formData.location,
-          experience_years: formData.experienceYears ? parseInt(formData.experienceYears) : null,
-          categories: formData.categories.split(',').map(c => c.trim()),
+          title: validData.title,
+          bio: validData.bio || null,
+          skills: validData.skills,
+          hourly_rate: validData.hourlyRate ? parseFloat(validData.hourlyRate) : null,
+          location: validData.location || null,
+          experience_years: validData.experience ? parseInt(validData.experience) : null,
+          categories: validData.categories,
           portfolio_files: portfolioFiles,
           is_published: true
         });
@@ -105,9 +141,10 @@ const PortfolioSetup = () => {
 
       navigate('/creators');
     } catch (error: any) {
+      logError('PortfolioSetup', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to create portfolio. Please try again.',
         variant: 'destructive',
       });
     } finally {

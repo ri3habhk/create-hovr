@@ -13,6 +13,8 @@ import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { projectSchema } from '@/lib/validation';
+import logError from '@/lib/errorLogger';
 
 interface Project {
   id: string;
@@ -91,10 +93,23 @@ const PostProject = () => {
   };
 
   const handleSubmit = async () => {
-    if (!projectName || !budget || !timeline || !freelancerType || !description) {
+    // Validate inputs using zod schema
+    const validationResult = projectSchema.safeParse({
+      project_name: projectName,
+      description,
+      location: location || '',
+      tags,
+      budget,
+      timeline,
+      freelancer_type: freelancerType
+    });
+
+    if (!validationResult.success) {
+      const errors = validationResult.error.flatten().fieldErrors;
+      const firstError = Object.values(errors).flat()[0];
       toast({
-        title: 'Missing Information',
-        description: 'Please fill in all required fields',
+        title: 'Validation Error',
+        description: firstError,
         variant: 'destructive',
       });
       return;
@@ -144,7 +159,7 @@ const PostProject = () => {
       // Reload projects
       loadAllProjects();
     } catch (error) {
-      console.error('Error posting project:', error);
+      logError('PostProject', error);
       toast({
         title: 'Error',
         description: 'Failed to post project. Please try again.',
