@@ -22,6 +22,9 @@ interface EditProjectDialogProps {
     freelancer_type: string[];
     description: string;
     tags: string[];
+    contact_email?: string;
+    contact_linkedin?: string;
+    contact_instagram?: string;
   } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -41,6 +44,9 @@ const EditProjectDialog = ({ project, open, onOpenChange, onSaved }: EditProject
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactLinkedIn, setContactLinkedIn] = useState('');
+  const [contactInstagram, setContactInstagram] = useState('');
 
   useEffect(() => {
     if (project) {
@@ -53,6 +59,9 @@ const EditProjectDialog = ({ project, open, onOpenChange, onSaved }: EditProject
       setFreelancerTypes(project.freelancer_type);
       setDescription(project.description);
       setTags(project.tags || []);
+      setContactEmail(project.contact_email || '');
+      setContactLinkedIn(project.contact_linkedin || '');
+      setContactInstagram(project.contact_instagram || '');
     }
   }, [project]);
 
@@ -84,6 +93,9 @@ const EditProjectDialog = ({ project, open, onOpenChange, onSaved }: EditProject
           freelancer_type: freelancerTypes,
           description,
           tags,
+          contact_email: contactEmail || null,
+          contact_linkedin: contactLinkedIn || null,
+          contact_instagram: contactInstagram || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', project.id);
@@ -244,6 +256,40 @@ const EditProjectDialog = ({ project, open, onOpenChange, onSaved }: EditProject
               placeholder="Describe your project in detail..."
               rows={6}
             />
+          </div>
+
+          <div>
+            <Label>Contact Details (At least one required) *</Label>
+            <div className="space-y-3 mt-2">
+              <div>
+                <Label htmlFor="contact-email" className="text-sm">Email</Label>
+                <Input
+                  id="contact-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contact-linkedin" className="text-sm">LinkedIn Profile</Label>
+                <Input
+                  id="contact-linkedin"
+                  value={contactLinkedIn}
+                  onChange={(e) => setContactLinkedIn(e.target.value)}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                />
+              </div>
+              <div>
+                <Label htmlFor="contact-instagram" className="text-sm">Instagram Handle</Label>
+                <Input
+                  id="contact-instagram"
+                  value={contactInstagram}
+                  onChange={(e) => setContactInstagram(e.target.value)}
+                  placeholder="@yourhandle"
+                />
+              </div>
+            </div>
           </div>
 
           <div>

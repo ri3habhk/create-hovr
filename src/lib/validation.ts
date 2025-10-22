@@ -29,8 +29,17 @@ export const projectSchema = z.object({
   timeline: z.string().min(1, 'Timeline is required'),
   freelancer_type: z.array(z.string()).min(1, 'At least one creator type is required'),
   company_name: z.string().trim().max(100, 'Company name must be less than 100 characters').optional(),
-  location_type: z.enum(['onsite', 'remote'])
-});
+  location_type: z.enum(['onsite', 'remote']),
+  contact_email: z.string().email('Invalid email').optional().or(z.literal('')),
+  contact_linkedin: z.string().optional(),
+  contact_instagram: z.string().optional(),
+}).refine(
+  (data) => data.contact_email || data.contact_linkedin || data.contact_instagram,
+  {
+    message: 'At least one contact method (Email, LinkedIn, or Instagram) is required',
+    path: ['contact_email'],
+  }
+);
 
 // Portfolio validation schema
 export const portfolioSchema = z.object({

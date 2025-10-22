@@ -21,6 +21,9 @@ interface Project {
   created_at: string;
   company_name?: string;
   location_type: 'onsite' | 'remote';
+  contact_email?: string;
+  contact_linkedin?: string;
+  contact_instagram?: string;
 }
 
 const Projects = () => {

@@ -31,6 +31,9 @@ interface Project {
   location: string;
   description: string;
   tags: string[];
+  contact_email?: string;
+  contact_linkedin?: string;
+  contact_instagram?: string;
 }
 
 const ClientDashboard = () => {

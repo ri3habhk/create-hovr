@@ -197,6 +197,9 @@ export type Database = {
         Row: {
           budget: string
           company_name: string | null
+          contact_email: string | null
+          contact_instagram: string | null
+          contact_linkedin: string | null
           created_at: string
           description: string
           freelancer_type: string[]
@@ -212,6 +215,9 @@ export type Database = {
         Insert: {
           budget: string
           company_name?: string | null
+          contact_email?: string | null
+          contact_instagram?: string | null
+          contact_linkedin?: string | null
           created_at?: string
           description: string
           freelancer_type?: string[]
@@ -227,6 +233,9 @@ export type Database = {
         Update: {
           budget?: string
           company_name?: string | null
+          contact_email?: string | null
+          contact_instagram?: string | null
+          contact_linkedin?: string | null
           created_at?: string
           description?: string
           freelancer_type?: string[]

@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, DollarSign, Calendar, Briefcase, Building } from 'lucide-react';
+import { MapPin, DollarSign, Calendar, Briefcase, Building, Mail, Linkedin, Instagram } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
@@ -19,6 +19,9 @@ interface ProjectDetailsDialogProps {
     description: string;
     tags: string[];
     created_at: string;
+    contact_email?: string;
+    contact_linkedin?: string;
+    contact_instagram?: string;
   } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -168,6 +171,36 @@ const ProjectDetailsDialog = ({ project, open, onOpenChange, onClaimed }: Projec
             <h3 className="font-semibold mb-2">Description</h3>
             <p className="text-muted-foreground whitespace-pre-wrap">{project.description}</p>
           </div>
+
+          {(project.contact_email || project.contact_linkedin || project.contact_instagram) && (
+            <div>
+              <h3 className="font-semibold mb-2">Contact Details</h3>
+              <div className="space-y-2">
+                {project.contact_email && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <a href={`mailto:${project.contact_email}`} className="text-primary hover:underline">
+                      {project.contact_email}
+                    </a>
+                  </div>
+                )}
+                {project.contact_linkedin && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Linkedin className="h-4 w-4 text-muted-foreground" />
+                    <a href={project.contact_linkedin} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      {project.contact_linkedin}
+                    </a>
+                  </div>
+                )}
+                {project.contact_instagram && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Instagram className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-foreground">{project.contact_instagram}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {project.tags && project.tags.length > 0 && (
             <div>
