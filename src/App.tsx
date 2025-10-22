@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import RoleSelection from "./pages/RoleSelection";
 import PortfolioSetup from "./pages/PortfolioSetup";
+import PortfolioEdit from "./pages/PortfolioEdit";
 import Settings from "./pages/Settings";
 import Pricing from "./pages/Pricing";
 import PostProject from "./pages/PostProject";
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/role-selection" element={<RoleSelection />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/portfolio-setup" element={<PortfolioSetup />} />
+          <Route path="/portfolio-edit/:id" element={<PortfolioEdit />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/post-project" element={<PostProject />} />
