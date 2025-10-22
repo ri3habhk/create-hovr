@@ -22,7 +22,6 @@ const CreatorsBrowse = () => {
 
   const loadCreators = async () => {
     try {
-      // Step 1: fetch published portfolios (avoid relying on FK embedding)
       const { data: portfolios, error: portfolioError } = await supabase
         .from('creator_portfolios')
         .select('*')
@@ -35,8 +34,9 @@ const CreatorsBrowse = () => {
         return;
       }
 
-      // Step 2: fetch matching profiles in a separate call
       const userIds = portfolios.map((p: any) => p.user_id);
+      
+      // Fetch profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url')
@@ -44,11 +44,39 @@ const CreatorsBrowse = () => {
 
       if (profilesError) throw profilesError;
 
+      // Fetch ratings
+      const { data: ratings, error: ratingsError } = await supabase
+        .from('creator_ratings')
+        .select('creator_id, rating')
+        .in('creator_id', userIds);
+
+      if (ratingsError) throw ratingsError;
+
+      // Calculate average ratings
+      const ratingsMap = new Map();
+      ratings?.forEach((r: any) => {
+        if (!ratingsMap.has(r.creator_id)) {
+          ratingsMap.set(r.creator_id, { sum: 0, count: 0 });
+        }
+        const current = ratingsMap.get(r.creator_id);
+        ratingsMap.set(r.creator_id, {
+          sum: current.sum + r.rating,
+          count: current.count + 1
+        });
+      });
+
       const profileMap = new Map(profiles?.map((p: any) => [p.id, p]));
-      const enriched = portfolios.map((p: any) => ({
-        ...p,
-        profiles: profileMap.get(p.user_id) || null,
-      }));
+      const enriched = portfolios.map((p: any) => {
+        const ratingData = ratingsMap.get(p.user_id);
+        const avgRating = ratingData ? ratingData.sum / ratingData.count : 0;
+        
+        return {
+          ...p,
+          profiles: profileMap.get(p.user_id) || null,
+          averageRating: avgRating,
+          totalRatings: ratingData?.count || 0
+        };
+      });
 
       setCreators(enriched);
     } catch (error) {
@@ -122,62 +150,76 @@ const CreatorsBrowse = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {creators.map((creator) => (
-                  <Link key={creator.id} to={`/creator/${creator.user_id}`} className="block">
-                    <Card className="bg-card/50 border-border/50 hover-lift group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg">
-                      <CardHeader className="pb-4">
-                        <div className="relative">
-                          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                            {creator.profiles?.avatar_url ? (
-                              <img src={creator.profiles.avatar_url} alt={creator.profiles.full_name} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-2xl font-bold text-primary">
-                                {getInitials(creator.profiles?.full_name || 'U')}
-                              </span>
+                {creators.map((creator) => {
+                  const displayName = creator.alias_name || `${creator.first_name || ''} ${creator.last_name || ''}`.trim();
+                  const initials = creator.first_name && creator.last_name 
+                    ? `${creator.first_name[0]}${creator.last_name[0]}`.toUpperCase()
+                    : 'U';
+                  
+                  return (
+                    <Link key={creator.id} to={`/creator/${creator.user_id}`} className="block">
+                      <Card className="bg-card/50 border-border/50 hover-lift group overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg">
+                        <CardHeader className="pb-4">
+                          <div className="relative">
+                            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                              {creator.profiles?.avatar_url ? (
+                                <img src={creator.profiles.avatar_url} alt={displayName} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-2xl font-bold text-primary">
+                                  {initials}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-center">
+                            <h3 className="font-bold text-lg">{displayName}</h3>
+                            <p className="text-primary font-medium">
+                              {creator.major_occupation}
+                              {creator.minor_occupation && ` • ${creator.minor_occupation}`}
+                            </p>
+                            {creator.location && (
+                              <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground mt-1">
+                                <MapPin className="h-3 w-3" />
+                                <span>{creator.location}</span>
+                              </div>
+                            )}
+                            {creator.totalRatings > 0 && (
+                              <div className="flex items-center justify-center gap-1 mt-2">
+                                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                <span className="font-semibold">{creator.averageRating.toFixed(1)}</span>
+                                <span className="text-xs text-muted-foreground">({creator.totalRatings})</span>
+                              </div>
                             )}
                           </div>
-                        </div>
-                        <div className="text-center">
-                          <h3 className="font-bold text-lg">{creator.profiles?.full_name}</h3>
-                          <p className="text-primary font-medium">{creator.title}</p>
-                          {creator.location && (
-                            <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground mt-1">
-                              <MapPin className="h-3 w-3" />
-                              <span>{creator.location}</span>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          {creator.skills && creator.skills.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4 justify-center">
+                              {creator.skills.slice(0, 3).map((skill: string, index: number) => (
+                                <Badge key={index} variant="secondary" className="text-xs">
+                                  {skill}
+                                </Badge>
+                              ))}
+                              {creator.skills.length > 3 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{creator.skills.length - 3}
+                                </Badge>
+                              )}
                             </div>
                           )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        {creator.experience_years && (
-                          <div className="text-center mb-4">
-                            <p className="text-sm text-muted-foreground">
-                              {creator.experience_years} years experience
-                            </p>
-                          </div>
-                        )}
 
-                        {creator.skills && creator.skills.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {creator.skills.slice(0, 3).map((skill: string, index: number) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-
-                        {creator.hourly_rate && (
-                          <div className="text-center">
-                            <p className="text-sm font-medium text-primary">
-                              ${creator.hourly_rate}/hour
-                            </p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))}
+                          {creator.budget_min && creator.budget_max && (
+                            <div className="text-center">
+                              <p className="text-sm font-medium text-primary">
+                                ₹{creator.budget_min.toLocaleString('en-IN')} - ₹{creator.budget_max.toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>

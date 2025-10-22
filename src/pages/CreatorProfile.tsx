@@ -150,20 +150,29 @@ const CreatorProfile = () => {
           <div className="grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               {/* About Section */}
-              <Card className="gradient-card border-border/50">
+                <Card className="gradient-card border-border/50">
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-4">About</h3>
-                  <p className="text-muted-foreground mb-4 whitespace-pre-wrap">
-                    {creator.bio}
-                  </p>
+                  {creator.bio ? (
+                    <p className="text-muted-foreground mb-4 whitespace-pre-wrap">
+                      {creator.bio}
+                    </p>
+                  ) : (
+                    <p className="text-muted-foreground mb-4 italic">
+                      No bio provided yet.
+                    </p>
+                  )}
                   {creator.skills && creator.skills.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {creator.skills.map((skill: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
+                    <>
+                      <h4 className="text-sm font-semibold mb-2">Skills</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {creator.skills.map((skill: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </CardContent>
               </Card>

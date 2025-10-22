@@ -12,6 +12,8 @@ import { Upload, X, Trash2 } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { portfolioSchema, validateFile } from '@/lib/validation';
 import logError from '@/lib/errorLogger';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { MARKETING_SKILLS } from '@/lib/skillsList';
 
 const OCCUPATIONS = [
   'UI/UX Designer',
@@ -49,8 +51,8 @@ const PortfolioEdit = () => {
     budgetMin: '',
     budgetMax: '',
     bio: '',
-    skills: ''
   });
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
   useEffect(() => {
     loadPortfolio();
@@ -93,9 +95,9 @@ const PortfolioEdit = () => {
         budgetMin: portfolio.budget_min?.toString() || '',
         budgetMax: portfolio.budget_max?.toString() || '',
         bio: portfolio.bio || '',
-        skills: portfolio.skills?.join(', ') || ''
       });
 
+      setSelectedSkills(portfolio.skills || []);
       setExistingFiles(portfolio.portfolio_files || []);
     } catch (error: any) {
       logError('PortfolioEdit', error);
@@ -188,7 +190,17 @@ const PortfolioEdit = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validationResult = portfolioSchema.safeParse(formData);
+    if (selectedSkills.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please select at least one skill',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const validationData = { ...formData, skills: selectedSkills.join(', ') };
+    const validationResult = portfolioSchema.safeParse(validationData);
 
     if (!validationResult.success) {
       const errors = validationResult.error.flatten().fieldErrors;
@@ -207,13 +219,11 @@ const PortfolioEdit = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Upload new files
       const newFileUrls = newFiles.length > 0 ? await uploadFiles(user.id) : [];
       const allFiles = [...existingFiles, ...newFileUrls];
 
       const validData = validationResult.data;
 
-      // Update profile with name
       await supabase
         .from('profiles')
         .update({
@@ -221,7 +231,6 @@ const PortfolioEdit = () => {
         })
         .eq('id', user.id);
 
-      // Update portfolio
       const { error } = await supabase
         .from('creator_portfolios')
         .update({
@@ -235,7 +244,7 @@ const PortfolioEdit = () => {
           budget_min: parseFloat(validData.budgetMin),
           budget_max: parseFloat(validData.budgetMax),
           bio: validData.bio,
-          skills: validData.skills.split(',').map(s => s.trim()),
+          skills: selectedSkills,
           portfolio_files: allFiles,
         })
         .eq('id', id);
@@ -427,13 +436,15 @@ const PortfolioEdit = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="skills">Skills (comma-separated) *</Label>
-                    <Input
-                      id="skills"
-                      placeholder="Figma, Adobe XD, Sketch, Prototyping"
-                      value={formData.skills}
-                      onChange={(e) => setFormData({...formData, skills: e.target.value})}
-                      required
+                    <Label htmlFor="skills">Skills *</Label>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Search and select all skills you can provide
+                    </p>
+                    <MultiSelect
+                      options={MARKETING_SKILLS}
+                      selected={selectedSkills}
+                      onChange={setSelectedSkills}
+                      placeholder="Search for skills..."
                     />
                   </div>
 

@@ -12,6 +12,8 @@ import { Upload, X } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { portfolioSchema, validateFile } from '@/lib/validation';
 import logError from '@/lib/errorLogger';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { MARKETING_SKILLS } from '@/lib/skillsList';
 
 const OCCUPATIONS = [
   'UI/UX Designer',
@@ -46,8 +48,8 @@ const PortfolioSetup = () => {
     budgetMin: '',
     budgetMax: '',
     bio: '',
-    skills: ''
   });
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -112,7 +114,17 @@ const PortfolioSetup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const validationResult = portfolioSchema.safeParse(formData);
+    if (selectedSkills.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please select at least one skill',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const validationData = { ...formData, skills: selectedSkills.join(', ') };
+    const validationResult = portfolioSchema.safeParse(validationData);
 
     if (!validationResult.success) {
       const errors = validationResult.error.flatten().fieldErrors;
@@ -134,7 +146,6 @@ const PortfolioSetup = () => {
       const portfolioFiles = files.length > 0 ? await uploadFiles(user.id) : [];
       const validData = validationResult.data;
 
-      // Update profile with name
       await supabase
         .from('profiles')
         .update({
@@ -142,7 +153,6 @@ const PortfolioSetup = () => {
         })
         .eq('id', user.id);
 
-      // Create portfolio
       const { error } = await supabase
         .from('creator_portfolios')
         .insert({
@@ -157,7 +167,7 @@ const PortfolioSetup = () => {
           budget_min: parseFloat(validData.budgetMin),
           budget_max: parseFloat(validData.budgetMax),
           bio: validData.bio,
-          skills: validData.skills.split(',').map(s => s.trim()),
+          skills: selectedSkills,
           portfolio_files: portfolioFiles,
           is_published: true
         });
@@ -326,13 +336,15 @@ const PortfolioSetup = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="skills">Skills (comma-separated) *</Label>
-                    <Input
-                      id="skills"
-                      placeholder="Figma, Adobe XD, Sketch, Prototyping"
-                      value={formData.skills}
-                      onChange={(e) => setFormData({...formData, skills: e.target.value})}
-                      required
+                    <Label htmlFor="skills">Skills *</Label>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Search and select all skills you can provide
+                    </p>
+                    <MultiSelect
+                      options={MARKETING_SKILLS}
+                      selected={selectedSkills}
+                      onChange={setSelectedSkills}
+                      placeholder="Search for skills..."
                     />
                   </div>
 
