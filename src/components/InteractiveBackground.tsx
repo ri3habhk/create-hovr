@@ -44,7 +44,7 @@ const InteractiveBackground = () => {
       bubblePos.current.x += (mousePos.current.x - bubblePos.current.x) * 0.05;
       bubblePos.current.y += (mousePos.current.y - bubblePos.current.y) * 0.05;
 
-      // Create gradient for bubble
+      // Create gradient for bubble (more visible)
       const gradient = ctx.createRadialGradient(
         bubblePos.current.x,
         bubblePos.current.y,
@@ -54,8 +54,9 @@ const InteractiveBackground = () => {
         300
       );
       
-      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
-      gradient.addColorStop(0.5, 'rgba(226, 232, 240, 0.08)');
+      gradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+      gradient.addColorStop(0.4, 'rgba(226, 232, 240, 0.25)');
+      gradient.addColorStop(0.7, 'rgba(203, 213, 225, 0.12)');
       gradient.addColorStop(1, 'rgba(226, 232, 240, 0)');
 
       // Draw bubble
@@ -77,8 +78,8 @@ const InteractiveBackground = () => {
         150
       );
       
-      gradient2.addColorStop(0, 'rgba(241, 245, 249, 0.12)');
-      gradient2.addColorStop(0.5, 'rgba(226, 232, 240, 0.06)');
+      gradient2.addColorStop(0, 'rgba(241, 245, 249, 0.35)');
+      gradient2.addColorStop(0.5, 'rgba(226, 232, 240, 0.18)');
       gradient2.addColorStop(1, 'rgba(226, 232, 240, 0)');
 
       ctx.fillStyle = gradient2;
@@ -108,7 +109,6 @@ const InteractiveBackground = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ mixBlendMode: 'screen' }}
     />
   );
 };
