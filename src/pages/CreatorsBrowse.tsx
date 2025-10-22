@@ -22,20 +22,35 @@ const CreatorsBrowse = () => {
 
   const loadCreators = async () => {
     try {
-      const { data, error } = await supabase
+      // Step 1: fetch published portfolios (avoid relying on FK embedding)
+      const { data: portfolios, error: portfolioError } = await supabase
         .from('creator_portfolios')
-        .select(`
-          *,
-          profiles:user_id (
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('is_published', true);
 
-      if (error) throw error;
+      if (portfolioError) throw portfolioError;
 
-      setCreators(data || []);
+      if (!portfolios || portfolios.length === 0) {
+        setCreators([]);
+        return;
+      }
+
+      // Step 2: fetch matching profiles in a separate call
+      const userIds = portfolios.map((p: any) => p.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      const profileMap = new Map(profiles?.map((p: any) => [p.id, p]));
+      const enriched = portfolios.map((p: any) => ({
+        ...p,
+        profiles: profileMap.get(p.user_id) || null,
+      }));
+
+      setCreators(enriched);
     } catch (error) {
       logError('CreatorsBrowse', error);
     } finally {
