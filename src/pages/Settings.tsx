@@ -85,6 +85,9 @@ const Settings = () => {
       });
 
       await loadUserData();
+      
+      // Notify Navigation component to refresh
+      window.dispatchEvent(new Event('profile-updated'));
     } catch (error: any) {
       logError('UpdateProfile', error);
       toast({

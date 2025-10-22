@@ -25,7 +25,17 @@ const Navigation = () => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Listen for profile updates from Settings page
+    const handleProfileUpdate = () => {
+      checkAuth();
+    };
+    
+    window.addEventListener('profile-updated', handleProfileUpdate);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
   }, []);
 
   const checkAuth = async () => {
