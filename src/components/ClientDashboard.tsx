@@ -4,9 +4,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, Eye, DollarSign } from 'lucide-react';
+import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, Eye, DollarSign, Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import logError from '@/lib/errorLogger';
+import EditProjectDialog from '@/components/EditProjectDialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Project {
   id: string;
@@ -17,6 +28,9 @@ interface Project {
   created_at: string;
   company_name?: string;
   location_type: 'onsite' | 'remote';
+  location: string;
+  description: string;
+  tags: string[];
 }
 
 const ClientDashboard = () => {
@@ -24,7 +38,12 @@ const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [projectClaims, setProjectClaims] = useState<any[]>([]);
   const [loadingClaims, setLoadingClaims] = useState(true);
+  const [editProject, setEditProject] = useState<Project | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     loadProjects();
@@ -114,6 +133,47 @@ const ClientDashboard = () => {
     }
   };
 
+  const handleEditProject = (project: Project) => {
+    setEditProject(project);
+    setEditDialogOpen(true);
+  };
+
+  const handleDeleteClick = (projectId: string) => {
+    setProjectToDelete(projectId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!projectToDelete) return;
+
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectToDelete);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Project Deleted',
+        description: 'Your project has been successfully deleted.',
+      });
+
+      // Reload projects
+      await loadProjects();
+    } catch (error) {
+      logError('ClientDashboard.handleDeleteConfirm', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to delete project. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setProjectToDelete(null);
+    }
+  };
+
   const stats = {
     profileViews: 0,
     pendingProjects: projects.length,
@@ -122,8 +182,9 @@ const ClientDashboard = () => {
   };
 
   return (
-    <main className="py-8">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <main className="py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
             <div>
@@ -232,17 +293,42 @@ const ClientDashboard = () => {
                   ) : (
                     <div className="space-y-4">
                       {projects.map((project) => (
-                        <div key={project.id} className="flex justify-between items-center p-4 bg-background/50 rounded-lg">
-                          <div>
-                            <h4 className="font-medium text-foreground">{project.project_name}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {Array.isArray(project.freelancer_type) ? project.freelancer_type.join(', ') : project.freelancer_type} • {project.budget} • {project.timeline}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Posted {new Date(project.created_at).toLocaleDateString()}
-                            </p>
+                        <div key={project.id} className="p-4 bg-background/50 rounded-lg border border-border/50">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-medium text-foreground mb-1">{project.project_name}</h4>
+                              {project.company_name && (
+                                <p className="text-xs text-muted-foreground mb-2">{project.company_name}</p>
+                              )}
+                              <p className="text-sm text-muted-foreground">
+                                {Array.isArray(project.freelancer_type) ? project.freelancer_type.join(', ') : project.freelancer_type} • {project.budget} • {project.timeline}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Posted {new Date(project.created_at).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <Badge className="bg-foreground text-background">Active</Badge>
                           </div>
-                          <Badge className="bg-foreground text-background">Active</Badge>
+                          <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
+                            <Button
+                              onClick={() => handleEditProject(project)}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1"
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </Button>
+                            <Button
+                              onClick={() => handleDeleteClick(project.id)}
+                              variant="outline"
+                              size="sm"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -368,6 +454,37 @@ const ClientDashboard = () => {
           </div>
         </div>
       </main>
+
+      {/* Edit Project Dialog */}
+      <EditProjectDialog
+        project={editProject}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onSaved={loadProjects}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your project
+              and all associated claims from creators.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Project
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
