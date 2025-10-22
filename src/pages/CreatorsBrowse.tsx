@@ -89,12 +89,19 @@ const CreatorsBrowse = () => {
   const getInitials = (name: string) => {
     return name
       .split(' ')
+      .filter(Boolean)
       .map(n => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
   };
 
+  const formatBudgetRange = (min: any, max: any) => {
+    const minNum = typeof min === 'number' ? min : Number(min);
+    const maxNum = typeof max === 'number' ? max : Number(max);
+    if (!isFinite(minNum) || !isFinite(maxNum)) return 'Budget not specified';
+    return `₹${minNum.toLocaleString('en-IN')} - ₹${maxNum.toLocaleString('en-IN')}`;
+  };
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -151,10 +158,8 @@ const CreatorsBrowse = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {creators.map((creator) => {
-                  const displayName = creator.alias_name || `${creator.first_name || ''} ${creator.last_name || ''}`.trim();
-                  const initials = creator.first_name && creator.last_name 
-                    ? `${creator.first_name[0]}${creator.last_name[0]}`.toUpperCase()
-                    : 'U';
+                  const displayName = (creator.alias_name?.trim() || `${(creator.first_name || '').trim()} ${(creator.last_name || '').trim()}`.trim() || creator.title?.trim() || 'Creator');
+                  const initials = getInitials(displayName);
                   
                   return (
                     <Link key={creator.id} to={`/creator/${creator.user_id}`} className="block">
@@ -183,13 +188,11 @@ const CreatorsBrowse = () => {
                                 <span>{creator.location}</span>
                               </div>
                             )}
-                            {creator.totalRatings > 0 && (
                               <div className="flex items-center justify-center gap-1 mt-2">
                                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                <span className="font-semibold">{creator.averageRating.toFixed(1)}</span>
-                                <span className="text-xs text-muted-foreground">({creator.totalRatings})</span>
+                                <span className="font-semibold">{(creator.averageRating?.toFixed ? creator.averageRating.toFixed(1) : Number(creator.averageRating || 0).toFixed(1))}</span>
+                                <span className="text-xs text-muted-foreground">({creator.totalRatings || 0})</span>
                               </div>
-                            )}
                           </div>
                         </CardHeader>
                         <CardContent className="pt-0">
@@ -208,13 +211,11 @@ const CreatorsBrowse = () => {
                             </div>
                           )}
 
-                          {creator.budget_min && creator.budget_max && (
                             <div className="text-center">
                               <p className="text-sm font-medium text-primary">
-                                ₹{creator.budget_min.toLocaleString('en-IN')} - ₹{creator.budget_max.toLocaleString('en-IN')}
+                                {formatBudgetRange(creator.budget_min, creator.budget_max)}
                               </p>
                             </div>
-                          )}
                         </CardContent>
                       </Card>
                     </Link>
