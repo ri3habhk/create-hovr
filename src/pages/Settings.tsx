@@ -33,21 +33,37 @@ const Settings = () => {
         return;
       }
 
-      // Load profile
+      // Load or create profile
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      setProfile(profileData);
+      let ensuredProfile = profileData;
+      if (!ensuredProfile) {
+        const { data: inserted, error: insertErr } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            first_name: (user as any).user_metadata?.first_name || '',
+            last_name: (user as any).user_metadata?.last_name || '',
+            email: user.email || null,
+          })
+          .select('*')
+          .single();
+        if (insertErr) throw insertErr;
+        ensuredProfile = inserted;
+      }
+
+      setProfile(ensuredProfile);
 
       // Load role
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       setUserRole(roleData?.role || '');
 
