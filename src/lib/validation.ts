@@ -27,7 +27,9 @@ export const projectSchema = z.object({
   
   budget: z.string().min(1, 'Budget is required'),
   timeline: z.string().min(1, 'Timeline is required'),
-  freelancer_type: z.string().min(1, 'Freelancer type is required')
+  freelancer_type: z.array(z.string()).min(1, 'At least one creator type is required'),
+  company_name: z.string().trim().max(100, 'Company name must be less than 100 characters').optional(),
+  location_type: z.enum(['onsite', 'remote'])
 });
 
 // Portfolio validation schema

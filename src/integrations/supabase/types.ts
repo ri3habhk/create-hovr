@@ -158,14 +158,51 @@ export type Database = {
         }
         Relationships: []
       }
+      project_claims: {
+        Row: {
+          claimed_at: string
+          client_notes: string | null
+          creator_id: string
+          id: string
+          project_id: string
+          status: string
+        }
+        Insert: {
+          claimed_at?: string
+          client_notes?: string | null
+          creator_id: string
+          id?: string
+          project_id: string
+          status?: string
+        }
+        Update: {
+          claimed_at?: string
+          client_notes?: string | null
+          creator_id?: string
+          id?: string
+          project_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_claims_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           budget: string
+          company_name: string | null
           created_at: string
           description: string
-          freelancer_type: string
+          freelancer_type: string[]
           id: string
           location: string
+          location_type: Database["public"]["Enums"]["location_type"]
           project_name: string
           tags: string[] | null
           timeline: string
@@ -174,11 +211,13 @@ export type Database = {
         }
         Insert: {
           budget: string
+          company_name?: string | null
           created_at?: string
           description: string
-          freelancer_type: string
+          freelancer_type?: string[]
           id?: string
           location: string
+          location_type?: Database["public"]["Enums"]["location_type"]
           project_name: string
           tags?: string[] | null
           timeline: string
@@ -187,11 +226,13 @@ export type Database = {
         }
         Update: {
           budget?: string
+          company_name?: string | null
           created_at?: string
           description?: string
-          freelancer_type?: string
+          freelancer_type?: string[]
           id?: string
           location?: string
+          location_type?: Database["public"]["Enums"]["location_type"]
           project_name?: string
           tags?: string[] | null
           timeline?: string
@@ -236,6 +277,7 @@ export type Database = {
     }
     Enums: {
       app_role: "client" | "creator" | "admin"
+      location_type: "onsite" | "remote"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -364,6 +406,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["client", "creator", "admin"],
+      location_type: ["onsite", "remote"],
     },
   },
 } as const

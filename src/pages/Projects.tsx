@@ -4,9 +4,10 @@ import Footer from '@/components/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, DollarSign, Calendar, Briefcase } from 'lucide-react';
+import { MapPin, DollarSign, Calendar, Briefcase, Building } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import ProjectDetailsDialog from '@/components/ProjectDetailsDialog';
 
 interface Project {
   id: string;
@@ -14,15 +15,19 @@ interface Project {
   location: string;
   budget: string;
   timeline: string;
-  freelancer_type: string;
+  freelancer_type: string[];
   description: string;
   tags: string[];
   created_at: string;
+  company_name?: string;
+  location_type: 'onsite' | 'remote';
 }
 
 const Projects = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,10 +56,12 @@ const Projects = () => {
   };
 
   const handleClaim = (projectId: string) => {
-    toast({
-      title: 'Project Claimed',
-      description: 'You have successfully claimed this project!',
-    });
+    // Open project details dialog instead
+    const project = projects.find(p => p.id === projectId);
+    if (project) {
+      setSelectedProject(project);
+      setDialogOpen(true);
+    }
   };
 
   return (
@@ -76,58 +83,68 @@ const Projects = () => {
             <p className="text-muted-foreground">No projects available at the moment</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="space-y-4">
             {projects.map((project) => (
-              <Card key={project.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="text-xl">{project.project_name}</CardTitle>
-                  <CardDescription className="flex items-center gap-2 mt-2">
-                    <MapPin className="h-4 w-4" />
-                    {project.location}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm">
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium">{project.budget}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>{project.timeline}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 text-sm">
-                    <Briefcase className="h-4 w-4 text-muted-foreground" />
-                    <span>{project.freelancer_type}</span>
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground line-clamp-3">
-                    {project.description}
-                  </p>
-                  
-                  {project.tags && project.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags.map((tag, idx) => (
-                        <Badge key={idx} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
+              <Card key={project.id} className="hover:shadow-lg transition-shadow border-border/50">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h3 className="text-xl font-bold text-foreground mb-1">{project.project_name}</h3>
+                        {project.company_name && (
+                          <p className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Building className="h-3 w-3" />
+                            {project.company_name}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" />
+                          <span>{project.location_type === 'remote' ? 'Remote' : project.location}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <DollarSign className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">{project.budget}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span>{project.timeline}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {project.freelancer_type.map((type, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  )}
-                  
-                  <Button 
-                    className="w-full bg-foreground text-background hover:bg-foreground/90"
-                    onClick={() => handleClaim(project.id)}
-                  >
-                    Claim Project
-                  </Button>
+                    
+                    <Button 
+                      className="bg-primary hover:bg-primary/90 md:w-auto w-full"
+                      onClick={() => handleClaim(project.id)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
       </main>
+
+      <ProjectDetailsDialog
+        project={selectedProject}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onClaimed={fetchProjects}
+      />
 
       <Footer />
     </div>

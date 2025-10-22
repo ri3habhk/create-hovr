@@ -32,11 +32,14 @@ const CreatorDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(null);
+  const [claimedProjects, setClaimedProjects] = useState<any[]>([]);
+  const [loadingClaims, setLoadingClaims] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
     loadPortfolios();
+    loadClaimedProjects();
   }, []);
 
   const loadPortfolios = async () => {
@@ -58,6 +61,39 @@ const CreatorDashboard = () => {
       logError('CreatorDashboard', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadClaimedProjects = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('project_claims')
+        .select(`
+          *,
+          projects:project_id (
+            id,
+            project_name,
+            company_name,
+            budget,
+            timeline,
+            freelancer_type,
+            location,
+            location_type,
+            description
+          )
+        `)
+        .eq('creator_id', user.id)
+        .order('claimed_at', { ascending: false });
+
+      if (error) throw error;
+      setClaimedProjects(data || []);
+    } catch (error) {
+      logError('CreatorDashboard.loadClaimedProjects', error);
+    } finally {
+      setLoadingClaims(false);
     }
   };
 
@@ -131,7 +167,7 @@ const CreatorDashboard = () => {
 
   const stats = {
     profileViews: 0,
-    pendingProjects: 0,
+    pendingProjects: claimedProjects.filter(c => c.status === 'pending').length,
     totalEarnings: 0
   };
 
@@ -239,67 +275,57 @@ const CreatorDashboard = () => {
                   <div className="space-y-4">
                     {portfolios.map((portfolio) => (
                       <div key={portfolio.id} className="p-4 bg-background/50 rounded-lg border border-border/50">
-                        <div className="flex justify-between items-start mb-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h4 className="font-medium text-foreground text-lg">
-                                {portfolio.alias_name || `${portfolio.first_name} ${portfolio.last_name}`}
-                              </h4>
-                              <span className={`text-xs px-2 py-1 rounded ${portfolio.is_published ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
-                                {portfolio.is_published ? 'Published' : 'Draft'}
-                              </span>
-                            </div>
-                            <p className="text-sm text-primary font-medium mb-2">
-                              {portfolio.major_occupation}
-                              {portfolio.minor_occupation && ` • ${portfolio.minor_occupation}`}
-                            </p>
-                            <p className="text-sm text-muted-foreground mb-2">
-                              {portfolio.location}
-                            </p>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {portfolio.bio}
-                            </p>
-                            {portfolio.skills && portfolio.skills.length > 0 && (
-                              <div className="flex gap-2 mt-3 flex-wrap">
-                                {portfolio.skills.slice(0, 5).map((skill: string, index: number) => (
-                                  <span key={index} className="text-xs bg-background px-2 py-1 rounded border border-border">
-                                    {skill}
-                                  </span>
-                                ))}
-                                {portfolio.skills.length > 5 && (
-                                  <span className="text-xs text-muted-foreground px-2 py-1">
-                                    +{portfolio.skills.length - 5} more
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                            {portfolio.portfolio_files && portfolio.portfolio_files.length > 0 && (
-                              <p className="text-xs text-muted-foreground mt-2">
-                                {portfolio.portfolio_files.length} portfolio {portfolio.portfolio_files.length === 1 ? 'file' : 'files'}
-                              </p>
-                            )}
-                          </div>
+...
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Claimed Projects */}
+            <Card className="bg-card/50 border-border/50">
+              <CardHeader>
+                <CardTitle className="text-foreground">Claimed Projects</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {loadingClaims ? (
+                  <p className="text-muted-foreground text-center py-4">Loading...</p>
+                ) : claimedProjects.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground mb-4">No claimed projects yet</p>
+                    <Button 
+                      onClick={() => navigate('/projects')}
+                      variant="outline"
+                    >
+                      Browse Projects
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {claimedProjects.map((claim) => (
+                      <div key={claim.id} className="p-4 bg-background/50 rounded-lg border border-border/50">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-medium text-foreground">{claim.projects?.project_name}</h4>
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            claim.status === 'accepted' ? 'bg-green-500/20 text-green-500' :
+                            claim.status === 'rejected' ? 'bg-red-500/20 text-red-500' :
+                            'bg-orange-500/20 text-orange-500'
+                          }`}>
+                            {claim.status}
+                          </span>
                         </div>
-                        <div className="flex gap-2 pt-3 border-t border-border/50">
-                          <Button
-                            onClick={() => handleEdit(portfolio.id)}
-                            variant="outline"
-                            size="sm"
-                            className="flex-1"
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            Edit Portfolio
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteClick(portfolio.id)}
-                            variant="outline"
-                            size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </Button>
-                        </div>
+                        {claim.projects?.company_name && (
+                          <p className="text-sm text-muted-foreground mb-2">{claim.projects.company_name}</p>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          {claim.projects?.budget} • {claim.projects?.timeline}
+                        </p>
+                        {claim.client_notes && (
+                          <p className="text-sm text-muted-foreground mt-2 p-2 bg-background rounded border border-border/50">
+                            Note: {claim.client_notes}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

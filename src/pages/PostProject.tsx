@@ -22,10 +22,12 @@ interface Project {
   location: string;
   budget: string;
   timeline: string;
-  freelancer_type: string;
+  freelancer_type: string[];
   description: string;
   tags: string[];
   created_at: string;
+  company_name?: string;
+  location_type: 'onsite' | 'remote';
 }
 
 const PostProject = () => {
@@ -33,7 +35,7 @@ const PostProject = () => {
   const [location, setLocation] = useState('');
   const [budget, setBudget] = useState('');
   const [timeline, setTimeline] = useState('');
-  const [freelancerType, setFreelancerType] = useState('');
+  const [freelancerTypes, setFreelancerTypes] = useState<string[]>([]);
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState('');
@@ -42,6 +44,8 @@ const PostProject = () => {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(true);
+  const [companyName, setCompanyName] = useState('');
+  const [locationType, setLocationType] = useState<'onsite' | 'remote'>('remote');
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -97,11 +101,13 @@ const PostProject = () => {
     const validationResult = projectSchema.safeParse({
       project_name: projectName,
       description,
-      location: location || '',
+      location: locationType === 'remote' ? 'Remote' : location,
       tags,
       budget,
       timeline,
-      freelancer_type: freelancerType
+      freelancer_type: freelancerTypes,
+      company_name: companyName,
+      location_type: locationType
     });
 
     if (!validationResult.success) {
@@ -132,12 +138,14 @@ const PostProject = () => {
       const { error } = await supabase.from('projects').insert({
         user_id: user.id,
         project_name: projectName,
-        location: location || 'Remote',
+        location: locationType === 'remote' ? 'Remote' : location,
         budget,
         timeline,
-        freelancer_type: freelancerType,
+        freelancer_type: freelancerTypes,
         description,
         tags,
+        company_name: companyName,
+        location_type: locationType
       });
 
       if (error) throw error;
@@ -152,9 +160,11 @@ const PostProject = () => {
       setLocation('');
       setBudget('');
       setTimeline('');
-      setFreelancerType('');
+      setFreelancerTypes([]);
       setDescription('');
       setTags([]);
+      setCompanyName('');
+      setLocationType('remote');
       
       // Reload projects
       loadAllProjects();
@@ -261,17 +271,46 @@ const PostProject = () => {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="location" className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        Location
-                      </Label>
+                      <Label htmlFor="company-name">Client/Company Name</Label>
                       <Input
-                        id="location"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g., Mumbai, India or Remote"
+                        id="company-name"
+                        value={companyName}
+                        onChange={(e) => setCompanyName(e.target.value)}
+                        placeholder="e.g., Tech Startup Inc."
                       />
                     </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="location-type" className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        Work Location Type *
+                      </Label>
+                      <Select value={locationType} onValueChange={(value: 'onsite' | 'remote') => {
+                        setLocationType(value);
+                        if (value === 'remote') setLocation('');
+                      }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select location type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="remote">Remote</SelectItem>
+                          <SelectItem value="onsite">On-site</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {locationType === 'onsite' && (
+                      <div>
+                        <Label htmlFor="location">Location *</Label>
+                        <Input
+                          id="location"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          placeholder="e.g., Mumbai, India"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -317,11 +356,18 @@ const PostProject = () => {
                   <div>
                     <Label htmlFor="freelancer-type" className="flex items-center">
                       <Users className="h-4 w-4 mr-1" />
-                      Type of Creator Needed *
+                      Types of Creators Needed *
                     </Label>
-                    <Select value={freelancerType} onValueChange={setFreelancerType}>
+                    <Select 
+                      value="" 
+                      onValueChange={(value) => {
+                        if (!freelancerTypes.includes(value)) {
+                          setFreelancerTypes([...freelancerTypes, value]);
+                        }
+                      }}
+                    >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select creator type" />
+                        <SelectValue placeholder="Add creator types" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="brand-designer">Brand Designer</SelectItem>
@@ -334,6 +380,14 @@ const PostProject = () => {
                         <SelectItem value="motion-graphics">Motion Graphics Artist</SelectItem>
                       </SelectContent>
                     </Select>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {freelancerTypes.map((type, index) => (
+                        <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {type.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                          <X className="h-3 w-3 cursor-pointer" onClick={() => setFreelancerTypes(freelancerTypes.filter(t => t !== type))} />
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
 
                   <div>

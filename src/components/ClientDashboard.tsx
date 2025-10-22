@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Settings, Plus, FileText, Users, Search, Bookmark, Eye, DollarSign } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import logError from '@/lib/errorLogger';
 
 interface Project {
@@ -12,17 +13,22 @@ interface Project {
   project_name: string;
   budget: string;
   timeline: string;
-  freelancer_type: string;
+  freelancer_type: string[];
   created_at: string;
+  company_name?: string;
+  location_type: 'onsite' | 'remote';
 }
 
 const ClientDashboard = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [projectClaims, setProjectClaims] = useState<any[]>([]);
+  const [loadingClaims, setLoadingClaims] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadProjects();
+    loadProjectClaims();
   }, []);
 
   const loadProjects = async () => {
@@ -45,6 +51,66 @@ const ClientDashboard = () => {
       logError('ClientDashboard', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadProjectClaims = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: projectsData } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('user_id', user.id);
+
+      if (!projectsData || projectsData.length === 0) {
+        setLoadingClaims(false);
+        return;
+      }
+
+      const projectIds = projectsData.map(p => p.id);
+
+      const { data, error } = await supabase
+        .from('project_claims')
+        .select(`
+          *,
+          projects:project_id (
+            id,
+            project_name,
+            company_name
+          ),
+          profiles:creator_id (
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
+        .in('project_id', projectIds)
+        .order('claimed_at', { ascending: false });
+
+      if (error) throw error;
+      setProjectClaims(data || []);
+    } catch (error) {
+      logError('ClientDashboard.loadProjectClaims', error);
+    } finally {
+      setLoadingClaims(false);
+    }
+  };
+
+  const handleClaimStatusUpdate = async (claimId: string, status: 'accepted' | 'rejected', notes?: string) => {
+    try {
+      const { error } = await supabase
+        .from('project_claims')
+        .update({ status, client_notes: notes })
+        .eq('id', claimId);
+
+      if (error) throw error;
+
+      // Reload claims
+      await loadProjectClaims();
+    } catch (error) {
+      logError('ClientDashboard.handleClaimStatusUpdate', error);
     }
   };
 
@@ -170,13 +236,78 @@ const ClientDashboard = () => {
                           <div>
                             <h4 className="font-medium text-foreground">{project.project_name}</h4>
                             <p className="text-sm text-muted-foreground">
-                              {project.freelancer_type} • {project.budget} • {project.timeline}
+                              {Array.isArray(project.freelancer_type) ? project.freelancer_type.join(', ') : project.freelancer_type} • {project.budget} • {project.timeline}
                             </p>
                             <p className="text-xs text-muted-foreground mt-1">
                               Posted {new Date(project.created_at).toLocaleDateString()}
                             </p>
                           </div>
                           <Badge className="bg-foreground text-background">Active</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Project Claims */}
+              <Card className="bg-card/50 border-border/50">
+                <CardHeader>
+                  <CardTitle className="text-foreground">Creators Who Claimed Your Projects</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {loadingClaims ? (
+                    <p className="text-muted-foreground text-center py-4">Loading...</p>
+                  ) : projectClaims.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-8">
+                      No claims yet. Post a project to get started!
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {projectClaims.map((claim) => (
+                        <div key={claim.id} className="p-4 bg-background/50 rounded-lg border border-border/50">
+                          <div className="flex justify-between items-start mb-2">
+                            <div>
+                              <h4 className="font-medium text-foreground">{claim.profiles?.full_name || 'Unknown Creator'}</h4>
+                              <p className="text-sm text-muted-foreground">{claim.projects?.project_name}</p>
+                            </div>
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              claim.status === 'accepted' ? 'bg-green-500/20 text-green-500' :
+                              claim.status === 'rejected' ? 'bg-red-500/20 text-red-500' :
+                              'bg-orange-500/20 text-orange-500'
+                            }`}>
+                              {claim.status}
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-3">
+                            Claimed {new Date(claim.claimed_at).toLocaleDateString()}
+                          </p>
+                          {claim.status === 'pending' && (
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  navigate(`/creator/${claim.creator_id}`);
+                                }}
+                                variant="outline"
+                              >
+                                View Profile
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => handleClaimStatusUpdate(claim.id, 'accepted')}
+                              >
+                                Accept
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleClaimStatusUpdate(claim.id, 'rejected')}
+                              >
+                                Decline
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
