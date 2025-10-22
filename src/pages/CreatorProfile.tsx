@@ -60,7 +60,8 @@ const CreatorProfile = () => {
       .slice(0, 2);
   };
 
-  const formatBudgetRange = (min: number, max: number) => {
+  const formatBudgetRange = (min: number | null, max: number | null) => {
+    if (!min || !max) return 'Budget not specified';
     return `₹${min.toLocaleString('en-IN')} - ₹${max.toLocaleString('en-IN')}`;
   };
 
