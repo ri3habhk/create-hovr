@@ -20,6 +20,23 @@ const CreatorsBrowse = () => {
     loadCreators();
   }, []);
 
+  // Realtime: refresh list when ratings change
+  useEffect(() => {
+    const channel = supabase
+      .channel('creator_ratings_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'creator_ratings' },
+        () => {
+          loadCreators();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   const loadCreators = async () => {
     try {
       const { data: portfolios, error: portfolioError } = await supabase

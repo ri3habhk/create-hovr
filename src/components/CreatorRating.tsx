@@ -39,7 +39,7 @@ const CreatorRating = ({ creatorId }: CreatorRatingProps) => {
       .select('role')
       .eq('user_id', user.id)
       .eq('role', 'client')
-      .single();
+      .maybeSingle();
 
     setIsClient(!!roleData);
 
@@ -49,7 +49,7 @@ const CreatorRating = ({ creatorId }: CreatorRatingProps) => {
         .select('*')
         .eq('creator_id', creatorId)
         .eq('client_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (existingRatingData) {
         setExistingRating(existingRatingData);
@@ -145,6 +145,24 @@ const CreatorRating = ({ creatorId }: CreatorRatingProps) => {
     }
   };
 
+  const addClientRole = async () => {
+    if (!currentUser) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({ user_id: currentUser.id, role: 'client' });
+      if (error) throw error;
+      setIsClient(true);
+      toast({ title: 'Client role added', description: 'You can now rate creators.' });
+    } catch (error) {
+      logError('CreatorRating.addClientRole', error);
+      toast({ title: 'Error', description: 'Could not enable rating. Try again.', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Average Rating Display */}
@@ -216,6 +234,18 @@ const CreatorRating = ({ creatorId }: CreatorRatingProps) => {
               className="w-full"
             >
               {loading ? 'Submitting...' : existingRating ? 'Update Rating' : 'Submit Rating'}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {currentUser && !isClient && (
+        <Card className="gradient-card border-border/50">
+          <CardContent className="p-6 space-y-4">
+            <h3 className="text-lg font-semibold">Want to rate this creator?</h3>
+            <p className="text-sm text-muted-foreground">Add the Client role to your account to submit ratings.</p>
+            <Button onClick={addClientRole} disabled={loading} className="w-full">
+              {loading ? 'Enabling…' : 'Enable rating (add Client role)'}
             </Button>
           </CardContent>
         </Card>
