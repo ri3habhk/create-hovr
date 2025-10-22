@@ -37,15 +37,9 @@ const DashboardSelector = () => {
     if (rolesList.length === 0) {
       setShowRoleSetup(true);
       setIsLoading(false);
-    } else if (rolesList.includes('client') && rolesList.includes('creator')) {
-      // If user has both roles, show selection dialog
+    } else {
+      // Always show selection dialog for users with roles
       setShowSelectionDialog(true);
-      setIsLoading(false);
-    } else if (rolesList.includes('client')) {
-      setSelectedDashboard('client');
-      setIsLoading(false);
-    } else if (rolesList.includes('creator')) {
-      setSelectedDashboard('creator');
       setIsLoading(false);
     }
   };
@@ -67,9 +61,11 @@ const DashboardSelector = () => {
       return;
     }
 
-    setUserRoles([role]);
+    const updatedRoles = [...userRoles, role];
+    setUserRoles(updatedRoles);
     setSelectedDashboard(role);
     setShowRoleSetup(false);
+    setShowSelectionDialog(false);
     setIsLoading(false);
     
     toast({
@@ -166,38 +162,42 @@ const DashboardSelector = () => {
           <DialogHeader>
             <DialogTitle className="text-2xl text-center">Choose Your Dashboard</DialogTitle>
             <DialogDescription className="text-center pt-2">
-              You have access to both client and creator features. Which dashboard would you like to view?
+              Which dashboard would you like to view?
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-6">
-            <Button
-              onClick={() => handleDashboardSelection('creator')}
-              className="h-32 flex flex-col items-center justify-center space-y-3 bg-card border-2 border-border hover:border-foreground hover:bg-card/80"
-              variant="outline"
-            >
-              <User className="h-10 w-10 text-foreground" />
-              <div className="text-center">
-                <div className="font-semibold text-foreground">Creator</div>
-                <div className="text-xs text-muted-foreground">Manage portfolio</div>
-              </div>
-            </Button>
-            <Button
-              onClick={() => handleDashboardSelection('client')}
-              className="h-32 flex flex-col items-center justify-center space-y-3 bg-card border-2 border-border hover:border-foreground hover:bg-card/80"
-              variant="outline"
-            >
-              <Users className="h-10 w-10 text-foreground" />
-              <div className="text-center">
-                <div className="font-semibold text-foreground">Client</div>
-                <div className="text-xs text-muted-foreground">Post projects</div>
-              </div>
-            </Button>
+            {(userRoles.includes('creator') || userRoles.length === 0) && (
+              <Button
+                onClick={() => userRoles.includes('creator') ? handleDashboardSelection('creator') : handleRoleSetup('creator')}
+                className="h-32 flex flex-col items-center justify-center space-y-3 bg-card border-2 border-border hover:border-foreground hover:bg-card/80"
+                variant="outline"
+              >
+                <User className="h-10 w-10 text-foreground" />
+                <div className="text-center">
+                  <div className="font-semibold text-foreground">Creator</div>
+                  <div className="text-xs text-muted-foreground">Manage portfolio</div>
+                </div>
+              </Button>
+            )}
+            {(userRoles.includes('client') || userRoles.length === 0) && (
+              <Button
+                onClick={() => userRoles.includes('client') ? handleDashboardSelection('client') : handleRoleSetup('client')}
+                className="h-32 flex flex-col items-center justify-center space-y-3 bg-card border-2 border-border hover:border-foreground hover:bg-card/80"
+                variant="outline"
+              >
+                <Users className="h-10 w-10 text-foreground" />
+                <div className="text-center">
+                  <div className="font-semibold text-foreground">Client</div>
+                  <div className="text-xs text-muted-foreground">Post projects</div>
+                </div>
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
       
-      {/* Dashboard Type Selector - Only show if user has both roles */}
-      {hasRole('creator') && hasRole('client') && (
+      {/* Dashboard Type Selector */}
+      {selectedDashboard && (
         <div className="border-b border-border/40 bg-background sticky top-0 z-50 mt-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center py-6">
@@ -207,7 +207,7 @@ const DashboardSelector = () => {
                     <Button
                       variant={selectedDashboard === 'creator' ? 'default' : 'ghost'}
                       size="sm"
-                      onClick={() => setSelectedDashboard('creator')}
+                      onClick={() => hasRole('creator') ? setSelectedDashboard('creator') : handleRoleSetup('creator')}
                       className={`${
                         selectedDashboard === 'creator'
                           ? 'bg-foreground text-background hover:bg-foreground/90'
@@ -220,7 +220,7 @@ const DashboardSelector = () => {
                     <Button
                       variant={selectedDashboard === 'client' ? 'default' : 'ghost'}
                       size="sm"
-                      onClick={() => setSelectedDashboard('client')}
+                      onClick={() => hasRole('client') ? setSelectedDashboard('client') : handleRoleSetup('client')}
                       className={`${
                         selectedDashboard === 'client'
                           ? 'bg-foreground text-background hover:bg-foreground/90'
@@ -239,7 +239,7 @@ const DashboardSelector = () => {
       )}
       
       {/* Add spacing when selector is hidden */}
-      {!(hasRole('creator') && hasRole('client')) && <div className="mt-20" />}
+      {!selectedDashboard && <div className="mt-20" />}
 
       {/* Dashboard Content */}
       <div className="relative z-10">

@@ -7,6 +7,7 @@ import { Star, MapPin, Upload, Calendar, DollarSign, Mail, Phone } from 'lucide-
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
+import ChatDialog from '@/components/ChatDialog';
 
 const CreatorProfile = () => {
   const { id } = useParams();
@@ -59,9 +60,10 @@ const CreatorProfile = () => {
               </div>
             </div>
 
-            <div>
+            <div className="flex gap-4">
+              <ChatDialog creatorName={creator.name} />
               <Link to="/upload">
-                <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 px-8 py-4">
+                <Button size="lg" variant="outline">
                   <Upload className="h-5 w-5 mr-2" />
                   Upload File
                 </Button>
