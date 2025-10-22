@@ -148,10 +148,10 @@ const PortfolioSetup = () => {
 
       await supabase
         .from('profiles')
-        .update({
+        .upsert({
+          id: user.id,
           full_name: `${validData.firstName} ${validData.lastName}`
-        })
-        .eq('id', user.id);
+        });
 
       const { error } = await supabase
         .from('creator_portfolios')

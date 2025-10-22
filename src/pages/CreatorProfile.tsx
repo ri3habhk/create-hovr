@@ -28,24 +28,31 @@ const CreatorProfile = () => {
         .select('*')
         .eq('user_id', id)
         .eq('is_published', true)
-        .single();
+        .maybeSingle();
 
       if (portfolioError) throw portfolioError;
+      
+      if (!portfolio) {
+        setCreator(null);
+        setLoading(false);
+        return;
+      }
 
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (profileError) throw profileError;
 
       setCreator({
         ...portfolio,
-        profile,
+        profile: profile || null,
       });
     } catch (error) {
       logError('CreatorProfile', error);
+      setCreator(null);
     } finally {
       setLoading(false);
     }
