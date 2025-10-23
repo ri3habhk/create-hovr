@@ -12,8 +12,6 @@ import { Upload, X } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { portfolioSchema, validateFile } from '@/lib/validation';
 import logError from '@/lib/errorLogger';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { MARKETING_SKILLS } from '@/lib/skillsList';
 
 const OCCUPATIONS = [
   'UI/UX Designer',
@@ -49,7 +47,7 @@ const PortfolioSetup = () => {
     budgetMax: '',
     bio: '',
   });
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [skillsInput, setSkillsInput] = useState('');
 
   useEffect(() => {
     checkAuth();
@@ -114,16 +112,21 @@ const PortfolioSetup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (selectedSkills.length === 0) {
+    const skillsArray = skillsInput
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(skill => skill.length > 0);
+    
+    if (skillsArray.length === 0) {
       toast({
         title: 'Validation Error',
-        description: 'Please select at least one skill',
+        description: 'Please enter at least one skill',
         variant: 'destructive',
       });
       return;
     }
 
-    const validationData = { ...formData, skills: selectedSkills.join(', ') };
+    const validationData = { ...formData, skills: skillsArray.join(', ') };
     const validationResult = portfolioSchema.safeParse(validationData);
 
     if (!validationResult.success) {
@@ -168,7 +171,7 @@ const PortfolioSetup = () => {
           budget_min: parseFloat(validData.budgetMin),
           budget_max: parseFloat(validData.budgetMax),
           bio: validData.bio,
-          skills: selectedSkills,
+          skills: skillsArray,
           portfolio_files: portfolioFiles,
           is_published: true
         });
@@ -339,13 +342,15 @@ const PortfolioSetup = () => {
                   <div>
                     <Label htmlFor="skills">Skills *</Label>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Search and select all skills you can provide
+                      Enter your skills separated by commas (e.g., Graphic Design, Video Editing, Photoshop)
                     </p>
-                    <MultiSelect
-                      options={MARKETING_SKILLS}
-                      selected={selectedSkills}
-                      onChange={setSelectedSkills}
-                      placeholder="Search for skills..."
+                    <Textarea
+                      id="skills"
+                      placeholder="Graphic Design, Video Editing, Photoshop, Social Media Marketing..."
+                      value={skillsInput}
+                      onChange={(e) => setSkillsInput(e.target.value)}
+                      rows={3}
+                      required
                     />
                   </div>
 

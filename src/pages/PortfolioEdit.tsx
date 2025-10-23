@@ -12,8 +12,6 @@ import { Upload, X, Trash2 } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { portfolioSchema, validateFile } from '@/lib/validation';
 import logError from '@/lib/errorLogger';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { MARKETING_SKILLS } from '@/lib/skillsList';
 
 const OCCUPATIONS = [
   'UI/UX Designer',
@@ -52,7 +50,7 @@ const PortfolioEdit = () => {
     budgetMax: '',
     bio: '',
   });
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [skillsInput, setSkillsInput] = useState('');
 
   useEffect(() => {
     loadPortfolio();
@@ -97,7 +95,8 @@ const PortfolioEdit = () => {
         bio: portfolio.bio || '',
       });
 
-      setSelectedSkills(portfolio.skills || []);
+      const skills = portfolio.skills || [];
+      setSkillsInput(Array.isArray(skills) ? skills.join(', ') : '');
       setExistingFiles(portfolio.portfolio_files || []);
     } catch (error: any) {
       logError('PortfolioEdit', error);
@@ -190,16 +189,21 @@ const PortfolioEdit = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (selectedSkills.length === 0) {
+    const skillsArray = skillsInput
+      .split(',')
+      .map(skill => skill.trim())
+      .filter(skill => skill.length > 0);
+    
+    if (skillsArray.length === 0) {
       toast({
         title: 'Validation Error',
-        description: 'Please select at least one skill',
+        description: 'Please enter at least one skill',
         variant: 'destructive',
       });
       return;
     }
 
-    const validationData = { ...formData, skills: selectedSkills.join(', ') };
+    const validationData = { ...formData, skills: skillsArray.join(', ') };
     const validationResult = portfolioSchema.safeParse(validationData);
 
     if (!validationResult.success) {
@@ -245,7 +249,7 @@ const PortfolioEdit = () => {
           budget_min: parseFloat(validData.budgetMin),
           budget_max: parseFloat(validData.budgetMax),
           bio: validData.bio,
-          skills: selectedSkills,
+          skills: skillsArray,
           portfolio_files: allFiles,
         })
         .eq('id', id);
@@ -439,13 +443,15 @@ const PortfolioEdit = () => {
                   <div>
                     <Label htmlFor="skills">Skills *</Label>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Search and select all skills you can provide
+                      Enter your skills separated by commas (e.g., Graphic Design, Video Editing, Photoshop)
                     </p>
-                    <MultiSelect
-                      options={MARKETING_SKILLS}
-                      selected={selectedSkills}
-                      onChange={setSelectedSkills}
-                      placeholder="Search for skills..."
+                    <Textarea
+                      id="skills"
+                      placeholder="Graphic Design, Video Editing, Photoshop, Social Media Marketing..."
+                      value={skillsInput}
+                      onChange={(e) => setSkillsInput(e.target.value)}
+                      rows={3}
+                      required
                     />
                   </div>
 
