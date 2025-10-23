@@ -22,6 +22,8 @@ export function MultiSelect({
   const [open, setOpen] = React.useState(false)
   const [search, setSearch] = React.useState("")
 
+  const inputRef = React.useRef<HTMLInputElement>(null)
+
   const handleSelect = (option: string) => {
     if (selected.includes(option)) {
       onChange(selected.filter((item) => item !== option))
@@ -31,6 +33,8 @@ export function MultiSelect({
       }
       onChange([...selected, option])
     }
+    // Keep focus on input after selection
+    setTimeout(() => inputRef.current?.focus(), 0)
   }
 
   const handleRemove = (option: string) => {
@@ -40,6 +44,13 @@ export function MultiSelect({
   const filteredOptions = options.filter((option) =>
     option.toLowerCase().includes(search.toLowerCase())
   )
+
+  // Keep dropdown open when typing or focused
+  React.useEffect(() => {
+    if (search.length > 0) {
+      setOpen(true)
+    }
+  }, [search])
 
   return (
     <div className="w-full">
@@ -71,15 +82,22 @@ export function MultiSelect({
       </div>
       <Command className="overflow-visible bg-transparent">
         <CommandInput
+          ref={inputRef}
           placeholder={placeholder}
           value={search}
           onValueChange={setSearch}
           onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 200)}
+          onBlur={() => setTimeout(() => setOpen(false), 300)}
         />
         {open && filteredOptions.length > 0 && (
           <div className="relative mt-2">
-            <div className="absolute top-0 z-50 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
+            <div 
+              className="absolute top-0 z-50 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in"
+              onMouseDown={(e) => {
+                // Prevent input from losing focus when clicking dropdown
+                e.preventDefault()
+              }}
+            >
               <CommandGroup className="max-h-60 overflow-auto">
                 {filteredOptions.map((option) => {
                   const isSelected = selected.includes(option)
