@@ -12,6 +12,7 @@ import { Upload, X } from 'lucide-react';
 import Navigation from '@/components/Navigation';
 import { portfolioSchema, validateFile } from '@/lib/validation';
 import logError from '@/lib/errorLogger';
+import SkillsSelect from '@/components/SkillsSelect';
 
 const OCCUPATIONS = [
   'UI/UX Designer',
@@ -47,7 +48,7 @@ const PortfolioSetup = () => {
     budgetMax: '',
     bio: '',
   });
-  const [skillsInput, setSkillsInput] = useState('');
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
   useEffect(() => {
     checkAuth();
@@ -112,21 +113,16 @@ const PortfolioSetup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const skillsArray = skillsInput
-      .split(',')
-      .map(skill => skill.trim())
-      .filter(skill => skill.length > 0);
-    
-    if (skillsArray.length === 0) {
+    if (selectedSkills.length === 0) {
       toast({
         title: 'Validation Error',
-        description: 'Please enter at least one skill',
+        description: 'Please select at least one skill',
         variant: 'destructive',
       });
       return;
     }
 
-    const validationData = { ...formData, skills: skillsArray.join(', ') };
+    const validationData = { ...formData, skills: selectedSkills.join(', ') };
     const validationResult = portfolioSchema.safeParse(validationData);
 
     if (!validationResult.success) {
@@ -171,7 +167,7 @@ const PortfolioSetup = () => {
           budget_min: parseFloat(validData.budgetMin),
           budget_max: parseFloat(validData.budgetMax),
           bio: validData.bio,
-          skills: skillsArray,
+          skills: selectedSkills,
           portfolio_files: portfolioFiles,
           is_published: true
         });
@@ -342,15 +338,11 @@ const PortfolioSetup = () => {
                   <div>
                     <Label htmlFor="skills">Skills *</Label>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Enter your skills separated by commas (e.g., Graphic Design, Video Editing, Photoshop)
+                      Select your skills from the dropdown
                     </p>
-                    <Textarea
-                      id="skills"
-                      placeholder="Graphic Design, Video Editing, Photoshop, Social Media Marketing..."
-                      value={skillsInput}
-                      onChange={(e) => setSkillsInput(e.target.value)}
-                      rows={3}
-                      required
+                    <SkillsSelect
+                      selectedSkills={selectedSkills}
+                      onSkillsChange={setSelectedSkills}
                     />
                   </div>
 
