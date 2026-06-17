@@ -296,7 +296,11 @@ const ClientDashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {projects.map((project) => (
+                      {projects.map((project) => {
+                        const assigned = projectClaims.find(
+                          (c) => c.project_id === project.id && c.status === 'accepted'
+                        );
+                        return (
                         <div key={project.id} className="p-4 bg-background/50 rounded-lg border border-border/50">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
@@ -311,8 +315,34 @@ const ClientDashboard = () => {
                                 Posted {new Date(project.created_at).toLocaleDateString()}
                               </p>
                             </div>
-                            <Badge className="bg-foreground text-background">Active</Badge>
+                            <Badge className={assigned ? 'bg-green-500/20 text-green-500' : 'bg-foreground text-background'}>
+                              {assigned ? 'Assigned' : 'Active'}
+                            </Badge>
                           </div>
+
+                          {assigned && (
+                            <div
+                              className="mt-3 flex items-center gap-3 p-2 rounded-md bg-card/60 border border-border/50 cursor-pointer hover:border-primary/50 transition-colors"
+                              onClick={() => navigate(`/creator/${assigned.creator_id}`)}
+                            >
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                {assigned.profiles?.avatar_url ? (
+                                  <img src={assigned.profiles.avatar_url} alt="creator" className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xs font-semibold text-primary">
+                                    {(assigned.profiles?.first_name?.[0] || 'C').toUpperCase()}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm">
+                                <span className="text-muted-foreground">Assigned to </span>
+                                <span className="font-medium text-foreground">
+                                  {assigned.profiles?.first_name || 'Creator'} {assigned.profiles?.last_name || ''}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
                           <div className="flex gap-2 mt-3 pt-3 border-t border-border/50">
                             <Button
                               onClick={() => handleEditProject(project)}
@@ -334,7 +364,8 @@ const ClientDashboard = () => {
                             </Button>
                           </div>
                         </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </CardContent>
