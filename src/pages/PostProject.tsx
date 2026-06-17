@@ -227,33 +227,42 @@ const PostProject = () => {
               </p>
             </div>
 
-            {/* Features Grid */}
+            {/* Features Grid — prominent value props */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card className="bg-card/50 border-border/50 text-center p-6">
-                <div className="flex justify-center mb-3">
-                  <Users className="h-10 w-10 text-primary" />
+              <Card className="relative overflow-hidden border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card text-center p-8 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-foreground to-primary" />
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center ring-4 ring-primary/20">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold mb-2">AI-Powered Matching</h3>
+                <h3 className="text-xl font-extrabold mb-2 tracking-tight">AI-Powered Matching</h3>
                 <p className="text-sm text-muted-foreground">
                   Smart algorithm finds perfect creators for your project
                 </p>
               </Card>
-              
-              <Card className="bg-card/50 border-border/50 text-center p-6">
-                <div className="flex justify-center mb-3">
-                  <Clock className="h-10 w-10 text-primary" />
+
+              <Card className="relative overflow-hidden border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card text-center p-8 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-foreground to-primary" />
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center ring-4 ring-primary/20">
+                    <Clock className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold mb-2">Save Time & Money</h3>
+                <h3 className="text-xl font-extrabold mb-2 tracking-tight">Save Time & Money</h3>
                 <p className="text-sm text-muted-foreground">
                   Get matched with pre-vetted professionals instantly
                 </p>
               </Card>
-              
-              <Card className="bg-card/50 border-border/50 text-center p-6">
-                <div className="flex justify-center mb-3">
-                  <DollarSign className="h-10 w-10 text-primary" />
+
+              <Card className="relative overflow-hidden border-2 border-primary/40 bg-gradient-to-br from-primary/10 via-card to-card text-center p-8 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all">
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-foreground to-primary" />
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center ring-4 ring-primary/20">
+                    <DollarSign className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-                <h3 className="text-lg font-bold mb-2">Transparent Pricing</h3>
+                <h3 className="text-xl font-extrabold mb-2 tracking-tight">Transparent Pricing</h3>
                 <p className="text-sm text-muted-foreground">
                   Clear budgets, no hidden fees, fair pricing
                 </p>
