@@ -18,7 +18,12 @@ const SubscriptionSection = () => {
           "Portfolio showcase",
           "Direct client messages",
           "Project bidding",
-          "Analytics dashboard"
+          "Analytics dashboard",
+          "Priority profile placement",
+          "Verified creator badge",
+          "Lower platform fee (5%)",
+          "Custom portfolio URL",
+          "Direct payouts to UPI/bank"
         ],
         popular: true,
         type: "creator"
@@ -34,7 +39,12 @@ const SubscriptionSection = () => {
           "Unlimited project postings",
           "Advanced creator search",
           "Direct contact access",
-          "Team collaboration"
+          "Team collaboration",
+          "AI-powered creator matching",
+          "Dedicated account manager",
+          "Bulk project posting",
+          "Contract & NDA templates",
+          "Priority dispute resolution"
         ],
         popular: true,
         type: "client"
