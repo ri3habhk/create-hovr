@@ -172,9 +172,35 @@ const CreatorsBrowse = () => {
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No creators found. Be the first to create your portfolio!</p>
               </div>
-            ) : (
+            ) : (() => {
+              const term = searchTerm.trim().toLowerCase();
+              const categoryMap: Record<string, string[]> = {
+                design: ['design', 'designer', 'ui', 'ux', 'brand', 'logo', 'graphic', 'illustrat'],
+                video: ['video', 'editor', 'motion', 'animat', 'filmmak', 'cinemat', 'reels'],
+                photography: ['photo', 'photographer', 'photography'],
+                content: ['content', 'writer', 'copywrit', 'blog', 'social media', 'marketing'],
+              };
+              const filtered = creators.filter((c) => {
+                const displayName = (c.alias_name?.trim() || `${(c.first_name || '').trim()} ${(c.last_name || '').trim()}`.trim() || c.title?.trim() || 'Creator');
+                const haystack = [displayName, c.major_occupation, c.minor_occupation, c.location, ...(c.skills || [])]
+                  .filter(Boolean).join(' ').toLowerCase();
+                if (term && !haystack.includes(term)) return false;
+                if (selectedCategory !== 'all') {
+                  const needles = categoryMap[selectedCategory] || [];
+                  if (!needles.some((n) => haystack.includes(n))) return false;
+                }
+                return true;
+              });
+              if (filtered.length === 0) {
+                return (
+                  <div className="text-center py-12">
+                    <p className="text-muted-foreground">No creators match your filters.</p>
+                  </div>
+                );
+              }
+              return (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {creators.map((creator) => {
+                {filtered.map((creator) => {
                   const displayName = (creator.alias_name?.trim() || `${(creator.first_name || '').trim()} ${(creator.last_name || '').trim()}`.trim() || creator.title?.trim() || 'Creator');
                   const initials = getInitials(displayName);
                   
@@ -194,7 +220,7 @@ const CreatorsBrowse = () => {
                             </div>
                           </div>
                           <div className="text-center">
-                            <h3 className="font-bold text-lg">{displayName}</h3>
+                            <h3 className="font-bold text-lg bg-gradient-to-r from-primary via-foreground to-primary bg-clip-text text-transparent">{displayName}</h3>
                             <p className="text-primary font-medium">
                               {creator.major_occupation}
                               {creator.minor_occupation && ` • ${creator.minor_occupation}`}
@@ -239,7 +265,8 @@ const CreatorsBrowse = () => {
                   );
                 })}
               </div>
-            )}
+              );
+            })()}
           </div>
         </section>
       </main>
