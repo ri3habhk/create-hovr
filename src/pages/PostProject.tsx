@@ -541,52 +541,84 @@ const PostProject = () => {
                   <p className="text-muted-foreground">No projects available at the moment</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {allProjects.map((project) => (
-                    <Card key={project.id} className="bg-card/50 border-border/50 hover:border-primary/50 transition-all">
-                      <CardHeader>
-                        <CardTitle className="text-xl">{project.project_name}</CardTitle>
-                        <div className="flex items-center text-sm text-muted-foreground">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {project.location}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <p className="text-sm text-muted-foreground line-clamp-3">
-                          {project.description}
-                        </p>
-                        
-                        <div className="space-y-2">
-                          <div className="flex items-center text-sm">
-                            <DollarSign className="h-4 w-4 mr-1 text-primary" />
-                            <span className="font-medium">{project.budget}</span>
-                          </div>
-                          <div className="flex items-center text-sm">
-                            <Clock className="h-4 w-4 mr-1 text-primary" />
-                            <span>{project.timeline}</span>
-                          </div>
-                          <div className="flex items-center text-sm">
-                            <Users className="h-4 w-4 mr-1 text-primary" />
-                            <span>{project.freelancer_type}</span>
-                          </div>
-                        </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {allProjects.map((project) => {
+                    const budgetMap: Record<string, string> = {
+                      'under-5k': 'Under ₹5,000',
+                      '5k-15k': '₹5,000 – ₹15,000',
+                      '15k-30k': '₹15,000 – ₹30,000',
+                      '30k-50k': '₹30,000 – ₹50,000',
+                      '50k-100k': '₹50,000 – ₹1,00,000',
+                      'above-100k': 'Above ₹1,00,000',
+                    };
+                    const budgetLabel = budgetMap[project.budget] || project.budget.replace(/\$/g, '₹');
+                    const types = Array.isArray(project.freelancer_type)
+                      ? project.freelancer_type
+                      : String(project.freelancer_type || '').split(/,\s*/).filter(Boolean);
+                    return (
+                      <Link to="/projects" key={project.id} className="block group">
+                        <Card className="bg-card/50 border-border/50 hover:border-primary/60 hover:shadow-xl transition-all cursor-pointer h-full">
+                          <CardContent className="p-6">
+                            <div className="flex gap-4">
+                              {/* Left: details */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-xl font-bold mb-1 truncate group-hover:text-primary transition-colors">
+                                  {project.project_name}
+                                </h3>
+                                <div className="flex items-center text-sm text-muted-foreground mb-3">
+                                  <MapPin className="h-4 w-4 mr-1" />
+                                  {project.location}
+                                </div>
+                                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                                  {project.description}
+                                </p>
 
-                        {project.tags && project.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2">
-                            {project.tags.slice(0, 3).map((tag, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                                <div className="flex items-center text-sm mb-3">
+                                  <Clock className="h-4 w-4 mr-2 text-primary" />
+                                  <span>{project.timeline}</span>
+                                </div>
 
-                        <Button className="w-full" variant="outline">
-                          View Details
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
+                                {types.length > 0 && (
+                                  <div>
+                                    <div className="flex items-center text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                                      <Users className="h-3.5 w-3.5 mr-1.5" />
+                                      Creators needed
+                                    </div>
+                                    <ul className="space-y-1">
+                                      {types.map((t, i) => (
+                                        <li key={i} className="text-sm flex items-center">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-primary mr-2" />
+                                          {t}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+
+                                {project.tags && project.tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-2 mt-4">
+                                    {project.tags.slice(0, 3).map((tag, index) => (
+                                      <Badge key={index} variant="secondary" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Right: budget highlight */}
+                              <div className="flex-shrink-0 w-32 sm:w-40 flex flex-col items-center justify-center text-center rounded-xl bg-gradient-to-br from-primary/15 via-primary/5 to-transparent border border-primary/30 p-4">
+                                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Budget</div>
+                                <div className="text-lg sm:text-2xl font-extrabold text-primary leading-tight">
+                                  {budgetLabel}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
